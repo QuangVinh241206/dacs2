@@ -21,7 +21,7 @@
             <!--begin::Sidebar Menu-->
             <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
                 <li class="nav-item menu-open">
-                    <a href="#" class="nav-link active">
+                    <a href="{{ route('admin.dashboard') }}" class="nav-link active">
                         <i class="nav-icon bi bi-speedometer"></i>
                         <p>Dashboard</p>
                     </a>
@@ -36,26 +36,34 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="./widgets/small-box.html" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
+                            <a href="{{ route('admin.products.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
+                                <i
+                                    class="nav-icon bi {{ request()->routeIs('admin.products.index') ? 'bi-circle-fill' : 'bi-circle' }}"></i>
                                 <p>Danh sách sản phẩm</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="./widgets/small-box.html" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
+                            <a href="{{ route('admin.products.create') }}"
+                                class="nav-link {{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
+                                <i
+                                    class="nav-icon bi {{ request()->routeIs('admin.products.create') ? 'bi-circle-fill' : 'bi-circle' }}"></i>
                                 <p>Thêm sản phẩm</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="./widgets/info-box.html" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
+                            <a href="{{ route('admin.products.trashed') }}"
+                                class="nav-link {{ request()->routeIs('admin.products.trashed') ? 'active' : '' }}">
+                                <i
+                                    class="nav-icon bi {{ request()->routeIs('admin.products.trashed') ? 'bi-circle-fill' : 'bi-circle' }}"></i>
                                 <p>Sản phẩm đã xóa</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="./widgets/cards.html" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
+                            <a href="{{ route('admin.categories.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                                <i
+                                    class="nav-icon bi {{ request()->routeIs('admin.categories.*') ? 'bi-circle-fill' : 'bi-circle' }}"></i>
                                 <p>Danh mục</p>
                             </a>
                         </li>
@@ -71,7 +79,7 @@
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                       <i class="bi bi-person-fill-gear"></i>
+                        <i class="bi bi-person-fill-gear"></i>
                         <p>
                             Tài khoản
                             <i class="nav-arrow bi bi-chevron-right"></i>
@@ -108,7 +116,7 @@
                         </p>
                     </a>
                 </li>
-                
+
             </ul>
             <!--end::Sidebar Menu-->
         </nav>
