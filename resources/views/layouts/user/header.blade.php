@@ -11,8 +11,8 @@
                 <a href="{{ route('home') }}"
                     class=" font-medium hover:text-primary transition {{ Request()->is('/') ? 'text-primary' : 'text-gray-800' }}">Trang
                     chủ</a>
-                <a href="{{ route('user.productDetail') }}"
-                    class="font-medium hover:text-primary transition {{ Request()->is('user/product_detail') ? 'text-primary' : 'text-gray-800' }}">Sản
+                <a href="{{ route('user.products') }}"
+                    class="font-medium hover:text-primary transition {{ Request()->is('user/products') ? 'text-primary' : 'text-gray-800' }}">Sản
                     phẩm</a>
                 <a href="{{ route('user.about') }}"
                     class="font-medium hover:text-primary transition {{ Request()->is('user/about') ? 'text-primary' : 'text-gray-800' }}">Về

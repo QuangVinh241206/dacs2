@@ -9,7 +9,8 @@
                         <h3 class="mb-0">Sản phẩm đã xóa</h3>
                     </div>
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.products.index') }}" class="btn btn-sm btn-secondary">Tới trang danh sách</a>
+                        <a href="{{ route('admin.products.index') }}" class="btn btn-sm btn-secondary">Tới trang danh
+                            sách</a>
                     </div>
                 </div>
             </div>
@@ -18,9 +19,11 @@
         <div class="app-content">
             <div class="container-fluid">
                 @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
-
                 <div class="card">
                     <div class="card-body table-responsive">
                         <table class="table table-striped table-bordered mb-0">

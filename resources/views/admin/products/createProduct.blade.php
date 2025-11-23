@@ -19,7 +19,7 @@
         <div class="app-content">
             <div class="container-fluid">
                 @if($errors->any())
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger ">
                         <ul class="mb-0">
                             @foreach($errors->all() as $e)
                                 <li>{{ $e }}</li>
@@ -40,6 +40,24 @@
                             <div class="mb-3">
                                 <label class="form-label">Slug</label>
                                 <input id="product-slug" name="slug" value="{{ old('slug') }}" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Giảm giá (%)</label>
+                                <input id="product-slug" name="slug" value="{{ old('discount_percent') }}"
+                                    class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Chịu tải</label>
+                                <input id="product-slug" name="weight_capacity" value="{{ old('slug', ) }}"
+                                    class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Chất kiệu</label>
+                                <input id="product-slug" name="material" value="{{ old('slug') }}" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Bảo hành</label>
+                                <input id="product-slug" name="warranty" value="{{ old('slug') }}" class="form-control">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Danh mục</label>

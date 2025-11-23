@@ -21,14 +21,21 @@ class ProductSeeder extends Seeder
             return;
         }
 
-        for ($i = 1; $i <= 20; $i++) {
+        for ($i = 1; $i <= 50; $i++) {
             $name = 'Giường ' . $faker->word() . ' ' . $i;
             $category = $categories->random();
+            $materials = ['Gỗ', 'Sắt', 'Thép', 'Nhựa'];
+            $warranties = ['6 tháng', '1 năm', '2 năm', '3 năm', 'Không bảo hành'];
+
             $product = Product::create([
                 'name' => $name,
                 'slug' => Str::slug($name),
                 'description' => $faker->sentence(12),
                 'category_id' => $category->id,
+                'discount_percent' => $faker->numberBetween(0, 40),
+                'weight_capacity' => $faker->numberBetween(10, 200).' kg',
+                'material' => $materials[array_rand($materials)],
+                'warranty' => $warranties[array_rand($warranties)],
                 'status' => 1,
             ]);
 

@@ -101,7 +101,8 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('admin.vouchers.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.vouchers.*') ? 'active' : '' }}">
                         <i class="bi bi-gift-fill"></i>
                         <p>
                             Mã giảm giá

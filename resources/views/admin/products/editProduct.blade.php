@@ -6,7 +6,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">Edit Product</h3>
+                        <h3 class="mb-0">Sửa sản phẩm</h3>
                     </div>
                     <div class="col-sm-6 text-end">
                         <a href="{{ route('admin.products.show', $product->id) }}" class="btn btn-sm btn-secondary">Quay
@@ -41,6 +41,26 @@
                             <div class="mb-3">
                                 <label class="form-label">Slug</label>
                                 <input id="product-slug" name="slug" value="{{ old('slug', $product->slug) }}"
+                                    class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Giảm giá (%)</label>
+                                <input id="product-slug" name="slug" value="{{ old('discount_percent', $product->discount_percent) }}"
+                                    class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Chịu tải</label>
+                                <input id="product-slug" name="weight_capacity" value="{{ old('slug', $product->weight_capacity) }}"
+                                    class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Chất kiệu</label>
+                                <input id="product-slug" name="material" value="{{ old('slug', $product->material) }}"
+                                    class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Bảo hành</label>
+                                <input id="product-slug" name="warranty" value="{{ old('slug', $product->warranty) }}"
                                     class="form-control">
                             </div>
                             <div class="mb-3">

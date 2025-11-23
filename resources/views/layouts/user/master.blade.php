@@ -14,6 +14,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+
     <script src="{{ asset('js/homepage.js') }}"></script>
 </head>
 
@@ -80,6 +81,8 @@
         </div>
     </div>
 
+    {{-- Render page-specific scripts pushed by views --}}
+    @stack('scripts')
 
 </body>
 

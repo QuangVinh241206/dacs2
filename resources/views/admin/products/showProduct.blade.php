@@ -9,6 +9,7 @@
                         <h3 class="mb-0">Sản phẩm: {{ $product->name }}</h3>
                     </div>
                     <div class="col-sm-6 text-end">
+                        <a href="{{ route('admin.products.edit',$product->id) }}" class="btn btn-sm btn-warning">Chỉnh sửa</a>
                         <a href="{{ route('admin.products.index') }}" class="btn btn-sm btn-secondary">Quay lại danh
                             sách</a>
                     </div>
@@ -19,7 +20,10 @@
         <div class="app-content">
             <div class="container-fluid">
                 @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
 
                 @if($errors->any())
@@ -34,8 +38,12 @@
 
                 <div class="card mb-4">
                     <div class="card-body">
-                        <p><strong>Slug:</strong><br>{{ $product->slug }}</p>
+                        <p><strong>Slug:</strong> {{ $product->slug }}</p>
                         <p><strong>Danh mục:</strong> {{ optional($product->category)->name }}</p>
+                        <p><strong>Giảm giá:</strong> {{ $product->discount_percent }}%</p>
+                        <p><strong>Chịu tải: </strong> {{ $product->weight_capacity }}</p>
+                        <p><strong>Chất liệu:</strong> {{ $product->material }}</p>
+                        <p><strong>Bảo hành:</strong> {{ $product->warranty }}</p>
                         <p><strong>Mô tả:</strong><br>{{ $product->description }}</p>
                     </div>
                 </div>

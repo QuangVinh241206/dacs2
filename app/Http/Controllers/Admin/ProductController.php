@@ -84,6 +84,10 @@ class ProductController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
+            'weight_capacity' => 'nullable|string|max:255',
+            'material' => 'nullable|string|max:255',
+            'warranty' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
             'status' => 'nullable|string',
@@ -91,12 +95,17 @@ class ProductController extends Controller
         $messages = [
             'required' => ':attribute không được để trống.',
             'max' => ':attribute không được vượt quá :max ký tự.',
+            'min' => ':attribute phải lớn hơn hoặc bằng :min.',
             'string' => ':attribute phải là chuỗi ký tự.',
             'exists' => ':attribute không hợp lệ.',
         ];
         $attributes = [
             'name' => 'Tên sản phẩm',
             'slug' => 'Slug',
+            'discount_percent' => 'Phần trăm giảm giá',
+            'weight_capacity' => 'Chịu tải',
+            'material' => 'Chất liệu',
+            'warranty' => 'Bảo hành',
             'description' => 'Mô tả',
             'category_id' => 'Danh mục',
             'status' => 'Trạng thái',
@@ -104,7 +113,7 @@ class ProductController extends Controller
 
         $request->validate($rules, $messages, $attributes);
 
-        $data = $request->only(['name', 'slug', 'description', 'category_id', 'status']);
+        $data = $request->only(['name', 'slug', 'description', 'category_id', 'status', 'discount_percent', 'weight_capacity', 'material', 'warranty']);
         // generate slug if empty and ensure uniqueness
         if (empty($data['slug'])) {
             $base = Str::slug($data['name'] ?? '');
@@ -216,12 +225,17 @@ class ProductController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
+            'weight_capacity' => 'nullable|string|max:255',
+            'material' => 'nullable|string|max:255',
+            'warranty' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
             'status' => 'nullable|string',
         ];
         $messages = [
             'required' => ':attribute không được để trống.',
+            'min' => ':attribute phải lớn hơn hoặc bằng :min.',
             'max' => ':attribute không được vượt quá :max ký tự.',
             'string' => ':attribute phải là chuỗi ký tự.',
             'exists' => ':attribute không hợp lệ.',
@@ -229,6 +243,10 @@ class ProductController extends Controller
         $attributes = [
             'name' => 'Tên sản phẩm',
             'slug' => 'Slug',
+            'discount_percent' => 'Phần trăm giảm giá',
+            'weight_capacity' => 'Chịu tải',
+            'material' => 'Chất liệu',
+            'warranty' => 'Bảo hành',
             'description' => 'Mô tả',
             'category_id' => 'Danh mục',
             'status' => 'Trạng thái',
@@ -236,7 +254,7 @@ class ProductController extends Controller
 
         $request->validate($rules, $messages, $attributes);
 
-        $data = $request->only(['name', 'description', 'status', 'category_id', 'slug']);
+        $data = $request->only(['name', 'description', 'status', 'category_id', 'slug', 'discount_percent', 'weight_capacity', 'material', 'warranty']);
         // ensure slug present and unique (exclude current product)
         if (empty($data['slug'])) {
             $base = Str::slug($data['name'] ?? '');
