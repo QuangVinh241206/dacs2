@@ -72,17 +72,17 @@
                 <div class="relative flex items-center text-gray-700 cursor-pointer" x-data="{ open: false }">
 
                     @auth
-                        <!-- Nút hiển thị icon + tên (nằm hàng ngang) -->
+                        <!-- Nút hiển thị icon + tên -->
                         <div @click="open = !open" class="flex items-center space-x-2 hover:text-primary">
                             <i class="ri-user-line ri-lg"></i>
-                            <span class="text-sm font-medium whitespace-nowrap">
+                            <span class="text-sm font-medium truncate  block">
                                 {{ auth()->user()->name }}
                             </span>
                         </div>
 
                         <!-- Dropdown Menu -->
                         <ul x-show="open" @click.outside="open = false"
-                            class="absolute top-full right-0 mt-2 w-auto bg-white shadow-lg rounded-md py-2 z-50">
+                            class="absolute top-full right-0 mt-2 w-56 bg-white shadow-lg rounded-md py-2 z-50 overflow-hidden">
 
                             <li>
                                 <a href="#" class="block px-4 py-2 hover:bg-gray-100">

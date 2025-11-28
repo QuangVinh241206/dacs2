@@ -9,7 +9,7 @@
                 <div class="md:w-1/2">
                     <div class="bg-gray-100 rounded-lg overflow-hidden shadow-sm mb-4">
                         <img src="{{ isset($mainImage->image_url) ? asset('storage/'.$mainImage->image_url ) : '#' }}"
-                            alt="{{ $product->name ?? 'Sản phẩm' }}" class="w-full h-96 object-cover object-top" id="main-image">
+                            alt="{{ $product->name ?? 'Sản phẩm' }}" class="w-full h-96 object-fit-lg-scale" id="main-image">
                     </div>
                     <div class="flex space-x-3">
                         @if(isset($thumbnails) && $thumbnails->count())
