@@ -36,14 +36,25 @@
                 <div class="md:w-1/2">
                     <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ $product->name ?? 'Sản phẩm' }}</h1>
                     <div class="flex items-center mb-4">
-                        <div class="flex text-yellow-400">
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-half-fill"></i>
+                        @php
+                            $avg = isset($avgRating) ? (float)$avgRating : (float)($product->reviews()->avg('rating') ?? 0);
+                            $rounded = round($avg * 2) / 2; // round to 0.5
+                            $full = (int) floor($rounded);
+                            $half = ($rounded - $full) == 0.5 ? 1 : 0;
+                            $empty = 5 - $full - $half;
+                        @endphp
+                        <div id="average-stars" class="flex text-yellow-400">
+                            @for($i=0;$i<$full;$i++)
+                                <i class="ri-star-fill"></i>
+                            @endfor
+                            @if($half)
+                                <i class="ri-star-half-fill"></i>
+                            @endif
+                            @for($i=0;$i<$empty;$i++)
+                                <i class="ri-star-line"></i>
+                            @endfor
                         </div>
-                        <span class="text-sm text-gray-500 ml-2">({{ isset($reviewCount) ? $reviewCount : ($product->reviews->count() ?? 0) }} đánh giá)</span>
+                        <span id="review-count" class="text-sm text-gray-500 ml-2">({{ isset($reviewCount) ? $reviewCount : ($product->reviews->count() ?? 0) }} đánh giá)</span>
                         <span class="ml-4 px-2 py-1 bg-primary text-white text-xs rounded">{{ $product->status == 1 ? 'Còn hàng' : 'Ngừng bán' }}</span>
                     </div>
                     <div class="flex items-center mb-6">
@@ -99,8 +110,12 @@
                             data-variant-id="{{ $product->variants->first()->id ?? '' }}">
                             <i class="ri-shopping-cart-2-line mr-2"></i> Thêm vào giỏ hàng
                         </button>
-                        <button class="w-12 h-12 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-primary hover:text-white transition">
-                            <i class="ri-heart-line text-2xl"></i>
+                        <button id="favorite-button" data-product-id="{{ $product->id }}" data-fav-url="{{ route('user.favorites.toggle') }}" data-login-url="{{ route('auth.login') }}" class="w-12 h-12 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+                            @if(isset($isFavorited) && $isFavorited)
+                                <i class="ri-heart-fill text-2xl text-red-500"></i>
+                            @else
+                                <i class="ri-heart-line text-2xl"></i>
+                            @endif
                         </button>
                     </div>
                     <div class="flex items-center space-x-6 text-gray-600 text-sm">
@@ -158,30 +173,15 @@
                     </div>
                     <div id="reviews" class="tab-content hidden">
                         <h3 class="text-xl font-semibold text-gray-900 mb-4">Đánh giá khách hàng</h3>
-                        <div class="space-y-6">
-                            @foreach($product->reviews as $review)
-                                <div class="border-b pb-4">
-                                    <div class="flex items-center mb-2">
-                                        <div class="flex text-yellow-400">
-                                            @for($i=0;$i<5;$i++)
-                                                @if($i < $review->rating)
-                                                    <i class="ri-star-fill"></i>
-                                                @else
-                                                    <i class="ri-star-line"></i>
-                                                @endif
-                                            @endfor
-                                        </div>
-                                        <span class="ml-2 text-sm text-gray-500">{{ $review->user->name ?? 'Khách' }} - {{ (\Carbon\Carbon::parse($review->created_at))->format('d/m/Y') }}</span>
-                                    </div>
-                                    <p class="text-gray-700">{{ $review->comment }}</p>
-                                </div>
-                            @endforeach
+                        <div id="reviews-list" class="space-y-6">
+                            @include('user.partials.reviews_list', ['reviews' => $product->reviews])
                         </div>
                         <div class="mt-6">
                             <h4 class="text-lg font-medium text-gray-800 mb-2">Viết đánh giá</h4>
-                            <form method="POST" action="#">
+                            <form id="review-form" method="POST" action="{{ route('user.reviews.store') }}">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id ?? '' }}">
+                                <input type="hidden" name="rating" id="rating-input" value="5">
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Đánh giá của bạn</label>
                                     <div class="flex text-gray-300 rating-input">
@@ -206,7 +206,7 @@
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Sản phẩm liên quan</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                     @foreach($related as $r)
-                        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="bg-white border-2 border-gray-200 rounded-lg shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1.5 transition  ">
                             <img src="{{ ($r->images->first()) ? (Str::startsWith($r->images->first()->image_url, ['http','//']) ? $r->images->first()->image_url : asset('storage/' . ltrim($r->images->first()->image_url, '/'))) : asset('images/placeholder.png') }}" class="w-full h-48 object-cover">
                             <div class="p-4">
                                 <h4 class="text-lg font-medium text-gray-900">{{ $r->name }}</h4>
@@ -230,211 +230,9 @@
 
 @push('scripts')
     <script>
-        (function(){
-            // Dữ liệu variants từ backend
-            var variants = @json($product->variants ?? []); 
-
-            var discount = {{ (int)($product->discount_percent ?? 0) }};
-
-            var priceEl = document.getElementById('price-display');
-            var origEl = document.getElementById('original-price');
-            var addBtn = document.getElementById('add-to-cart');
-            var colorContainer = document.getElementById('color-buttons-container');
-            var sizeButtons = document.querySelectorAll('.size-button');
-
-            var selectedSize = null;
-            var selectedColor = null;
-
-            function formatVnd(n){
-                return new Intl.NumberFormat('vi-VN').format(Math.round(n)) + '₫';
-            }
-
-            // 1. Tìm biến thể khớp với SIZE và COLOR (An toàn với null/rỗng)
-            function findVariant(size, color){
-                if(!variants) return null;
-                var targetSize = size === null ? '' : String(size);
-                var targetColor = color === null ? '' : String(color);
-                
-                for(var i=0;i<variants.length;i++){
-                    var vSize = variants[i].size === null ? '' : String(variants[i].size);
-                    var vColor = variants[i].color === null ? '' : String(variants[i].color);
-
-                    if(vSize === targetSize && vColor === targetColor) {
-                        return variants[i];
-                    }
-                }
-                return null;
-            }
-
-            // 2. Cập nhật Giá và Variant ID
-            function updatePriceAndVariant(v){
-                if(!v || (v.stock && v.stock <= 0)){
-                    priceEl.textContent = 'Hết hàng';
-                    origEl.textContent = '';
-                    origEl.classList.add('hidden');
-                    addBtn.setAttribute('data-variant-id', '');
-                    addBtn.disabled = true;
-                    addBtn.innerHTML = '<i class="ri-shopping-cart-2-line mr-2"></i> Hết hàng';
-                    return;
-                }
-
-                var price = v.price;
-                if(discount && discount > 0){
-                    var discounted = Math.round(price * (1 - discount/100));
-                    priceEl.textContent = formatVnd(discounted);
-                    origEl.textContent = formatVnd(price);
-                    origEl.classList.remove('hidden');
-                } else {
-                    priceEl.textContent = formatVnd(price);
-                    origEl.textContent = '';
-                    origEl.classList.add('hidden');
-                }
-
-                if(addBtn) addBtn.setAttribute('data-variant-id', v.id);
-                addBtn.disabled = false;
-                addBtn.innerHTML = '<i class="ri-shopping-cart-2-line mr-2"></i> Thêm vào giỏ hàng';
-            }
-
-            // 3. Xử lý khi chọn Kích thước
-            function handleSizeSelect(sizeButton){
-                // Cập nhật trạng thái nút Kích thước
-                sizeButtons.forEach(function(b){ 
-                    b.classList.remove('bg-primary','text-white'); 
-                    b.classList.add('bg-white','text-gray-700'); 
-                });
-                sizeButton.classList.remove('bg-white','text-gray-700');
-                sizeButton.classList.add('bg-primary','text-white');
-
-                selectedSize = sizeButton.getAttribute('data-size');
-                selectedColor = null; // Reset Màu khi Kích thước thay đổi
-                renderColorButtons(selectedSize);
-            }
-
-            // 4. Hiển thị các nút Màu sắc có sẵn cho Kích thước đã chọn (DÙNG TEXT BUTTON)
-            function renderColorButtons(size){
-                colorContainer.innerHTML = ''; // Xóa các nút cũ
-
-                var compareSize = size === null ? '' : String(size);
-                var availableColors = [];
-
-                variants.forEach(function(v){
-                    var vSize = v.size === null ? '' : String(v.size);
-                    
-                    if(vSize === compareSize && v.color && availableColors.indexOf(v.color) === -1){
-                        availableColors.push(v.color);
-                    }
-                });
-
-                if(availableColors.length === 0){
-                    colorContainer.innerHTML = '<span class="text-gray-600">Không có tùy chọn màu sắc.</span>';
-                    // Cập nhật giá dựa trên Size và Color rỗng
-                    var v = findVariant(size, null); 
-                    updatePriceAndVariant(v);
-                    return;
-                }
-
-                // Tạo nút màu dưới dạng text button
-                availableColors.forEach(function(color){
-                    var btn = document.createElement('button');
-                    btn.setAttribute('type', 'button');
-                    btn.setAttribute('data-color', color);
-                    btn.title = color;
-
-                    // Sử dụng class của nút kích thước
-                    btn.className = 'color-button px-4 py-2 rounded border border-gray-300 text-gray-700 font-medium bg-white hover:bg-primary hover:text-white transition';
-                    btn.textContent = color; // Chèn tên màu vào
-
-                    // Xử lý khi chọn Màu sắc
-                    btn.addEventListener('click', function(){
-                        // Bỏ chọn tất cả nút màu khác
-                        document.querySelectorAll('.color-button').forEach(function(c){ 
-                            c.classList.remove('bg-primary','text-white'); 
-                            c.classList.add('bg-white','text-gray-700');
-                        });
-                        
-                        // Chọn nút hiện tại
-                        btn.classList.remove('bg-white','text-gray-700');
-                        btn.classList.add('bg-primary','text-white');
-
-                        selectedColor = btn.getAttribute('data-color');
-
-                        // Tìm và cập nhật biến thể cuối cùng
-                        var finalVariant = findVariant(selectedSize, selectedColor);
-                        updatePriceAndVariant(finalVariant);
-                    });
-                    colorContainer.appendChild(btn);
-                });
-
-                // Tự động chọn màu đầu tiên và cập nhật giá
-                var firstColorButton = document.querySelector('.color-button');
-                if(firstColorButton){
-                    firstColorButton.click(); // Giả lập click để chọn và cập nhật giá/id
-                }
-            }
-
-            // 5. Khởi tạo Kích thước và Màu sắc
-            if(sizeButtons.length){
-                sizeButtons.forEach(function(btn){
-                    btn.addEventListener('click', function(){
-                        handleSizeSelect(this);
-                    });
-                });
-
-                // Tự động chọn Kích thước đầu tiên khi tải trang
-                sizeButtons[0].click();
-            } else if(variants.length) {
-                // Nếu không có nút kích thước, chỉ hiển thị màu sắc nếu có
-                selectedSize = null;
-                renderColorButtons(selectedSize);
-            }
-
-            // ... Các logic khác (Thumbnail, Tabs) giữ nguyên ...
-            var thumbnails = document.querySelectorAll('.thumbnail');
-            var mainImage = document.getElementById('main-image');
-            if(thumbnails && thumbnails.length){
-                thumbnails.forEach(function(t){
-                    t.addEventListener('click', function(){
-                        var src = t.getAttribute('data-src') || t.getAttribute('src');
-                        if(src && mainImage) mainImage.setAttribute('src', src);
-                        thumbnails.forEach(function(x){ x.classList.remove('border-primary'); x.classList.add('border-transparent'); });
-                        t.classList.remove('border-transparent');
-                        t.classList.add('border-primary');
-                    });
-                });
-            }
-
-            var tabButtons = document.querySelectorAll('.tab-button');
-            var tabContents = document.querySelectorAll('.tab-content');
-            if(tabButtons.length){
-                tabButtons.forEach(function(btn){
-                    btn.addEventListener('click', function(){
-                        var target = btn.getAttribute('data-tab');
-
-                        tabButtons.forEach(function(b){
-                            b.classList.remove('active', 'border-primary');
-                            b.classList.add('text-gray-500', 'border-transparent');
-                            b.setAttribute('aria-selected', 'false');
-                        });
-                        btn.classList.add('active', 'border-primary');
-                        btn.classList.remove('text-gray-500', 'border-transparent');
-                        btn.setAttribute('aria-selected', 'true');
-
-                        tabContents.forEach(function(c){ c.classList.add('hidden'); c.setAttribute('aria-hidden', 'true'); });
-                        var targetEl = document.getElementById(target);
-                        if(targetEl){ targetEl.classList.remove('hidden'); targetEl.setAttribute('aria-hidden', 'false'); }
-                    });
-                });
-
-                var activeBtn = document.querySelector('.tab-button.active') || tabButtons[0];
-                if(activeBtn){
-                    var initial = activeBtn.getAttribute('data-tab');
-                    tabContents.forEach(function(c){ c.classList.add('hidden'); c.setAttribute('aria-hidden', 'true'); });
-                    var el = document.getElementById(initial);
-                    if(el){ el.classList.remove('hidden'); el.setAttribute('aria-hidden', 'false'); }
-                    tabButtons.forEach(function(b){ b.classList.remove('active', 'border-primary'); b.classList.add('text-gray-500', 'border-transparent'); b.setAttribute('aria-selected', 'false'); });
-                    activeBtn.classList.add('active', 'border-primary'); activeBtn.classList.remove('text-gray-500', 'border-transparent'); activeBtn.setAttribute('aria-selected','true');
-                }
-            }
-        })();
+        // Truyền dữ liệu variants và discount từ backend sang JavaScript
+        window.productVariants = @json($variantsData ?? []);
+        window.productDiscount = {{ (int)($product->discount_percent ?? 0) }};
     </script>
+    <script src="{{ asset('js/UserProductDetail.js') }}"></script>
 @endpush

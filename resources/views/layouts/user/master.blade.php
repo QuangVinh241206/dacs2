@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giường Đẹp - Nội Thất Phòng Ngủ Cao Cấp</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>tailwind.config = { theme: { extend: { colors: { primary: '#3b82f6', secondary: '#f59e0b' }, borderRadius: { 'none': '0px', 'sm': '4px', DEFAULT: '8px', 'md': '12px', 'lg': '16px', 'xl': '20px', '2xl': '24px', '3xl': '32px', 'full': '9999px', 'button': '8px' } } } }</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,8 +15,10 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-
+    <script src="//unpkg.com/alpinejs" defer></script>
     <script src="{{ asset('js/homepage.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-3fp9qXQxk3YfY6zY2bY6Y3Kk2oS4t+6f5f1b6u3vY/8=" crossorigin="anonymous"></script>
 </head>
 
 <body class="bg-gray-50">
@@ -81,7 +84,6 @@
         </div>
     </div>
 
-    {{-- Render page-specific scripts pushed by views --}}
     @stack('scripts')
 
 </body>

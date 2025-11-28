@@ -72,11 +72,11 @@
             <div class="w-full md:w-3/4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($products as $product)
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1.5 transition  ">
                     <a href="{{ route('user.productDetail',$product->slug) }}">
                         <div class="h-56 bg-gray-100">
                             @if($product->images->count())
-                                <img src="{{ asset('storage/' . $product->images->first()->image_url) }}" alt="{{ $product->name }}"
+                                <img src="{{ asset('storage/' . $product->images->where('is_main', true)->first()->image_url) }}" alt="{{ $product->name }}"
                                     class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-gray-400">No image</div>
@@ -90,14 +90,13 @@
                         <div class="flex items-center justify-between">
                             <div class="text-primary font-semibold">
                                 @if($product->variants->count())
-                                    {{ number_format($product->variants->min('price'), 0, ',', '.') }} -
-                                    {{ number_format($product->variants->max('price'), 0, ',', '.') }}
+                                    {{ number_format($product->variants->min('price'), 0, ',', '.') }}đ -
+                                    {{ number_format($product->variants->max('price'), 0, ',', '.') }}đ
                                 @else
                                     -
                                 @endif
                             </div>
-                            <a href="{{ route('user.productDetail', $product->slug) }}"
-                                class="text-sm text-white bg-primary px-3 py-1 rounded">Chi tiết</a>
+                            
                         </div>
                     </div>
                 </div>

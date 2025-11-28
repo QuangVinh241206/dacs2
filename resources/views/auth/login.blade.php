@@ -7,24 +7,27 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-1">Đăng nhập</h2>
             <p class="text-gray-500 text-sm">Chào mừng bạn quay trở lại!</p>
         </div>
-        <form method="POST" action="{{ route('auth.login') }}">
+        <form method="POST" action="{{ route('auth.login.post') }}">
             @csrf
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2" for="email">Email</label>
-                <input id="email" name="email" type="email" required
+                <input id="email" name="email" type="email"
                     class="w-full px-4 py-3 rounded-button border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     placeholder="Nhập email của bạn" value="{{ old('email') }}">
+                @error('email')
+                    <p class="text-danger">{{ $message }}</p>
+                @enderror
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2" for="password">Mật khẩu</label>
-                <input id="password" name="password" type="password" required
+                <input id="password" name="password" type="password"
                     class="w-full px-4 py-3 rounded-button border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     placeholder="Nhập mật khẩu">
+                @error('password')
+                    <p class="text-danger">{{ $message }}</p>
+                @enderror
             </div>
             <div class="flex items-center justify-between mb-6">
-                <label class="flex items-center text-sm text-gray-600">
-                    <input type="checkbox" name="remember" class="mr-2"> Ghi nhớ đăng nhập
-                </label>
                 <a href="#" class="text-primary text-sm hover:underline">Quên mật khẩu?</a>
             </div>
             <button type="submit"

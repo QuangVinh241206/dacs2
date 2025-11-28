@@ -76,8 +76,8 @@
                                         <td>{{ $p->variants->count() }}</td>
                                         <td>
                                             @if($p->variants->count())
-                                                {{ number_format($p->variants->min('price'), 0, ',', '.') }} -
-                                                {{ number_format($p->variants->max('price'), 0, ',', '.') }}
+                                                {{ number_format($p->variants->min('price'), 0, ',', '.') }}đ -
+                                                {{ number_format($p->variants->max('price'), 0, ',', '.') }}đ
                                             @else
                                                 -
                                             @endif

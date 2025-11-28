@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -105,10 +106,17 @@ class ProductController extends Controller
             return [
                 'id' => $v->id,
                 'size' => $v->size,
+                'color' => $v->color ?? null,
                 'price' => (float) $v->price,
                 'stock' => (int) $v->stock,
             ];
         })->toArray();
+
+        // is current user favorited this product?
+        $isFavorited = false;
+        if (Auth::check()) {
+            $isFavorited = \App\Models\Favorite::where('user_id', Auth::id())->where('product_id', $product->id)->exists();
+        }
 
         return view('user.productDetail', compact(
             'product',
@@ -120,7 +128,8 @@ class ProductController extends Controller
             'reviewCount',
             'stock',
             'related',
-            'variantsData'
+            'variantsData',
+            'isFavorited'
         ));
     }
 }
