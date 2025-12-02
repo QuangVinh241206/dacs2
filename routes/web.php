@@ -7,6 +7,10 @@ use App\Http\Controllers\User\HomeController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Chat AI query endpoint
+Route::post('/chat/query', [\App\Http\Controllers\ChatController::class, 'query'])->name('chat.query');
+
+
 // Authentication routes
 Route::prefix('auth')->group(function () {
     Route::get('login', function () {
@@ -28,8 +32,9 @@ Route::prefix('user')->group(function () {
     route::get('contact', function () {
         return view('user.contact');
     })->name('user.contact');
-    // Product detail by slug
+    // Product detail by slug - must be BEFORE generic products route
     Route::get('products/{slug}', [\App\Http\Controllers\User\ProductController::class, 'show'])->name('user.productDetail');
+    // Generic products list
     Route::get('products', [\App\Http\Controllers\User\ProductController::class, 'index'])->name('user.products');
     Route::post('favorites/toggle', [\App\Http\Controllers\User\FavoriteController::class, 'toggle'])->name('user.favorites.toggle');
     Route::post('products/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->name('user.reviews.store');
