@@ -106,8 +106,9 @@
                             <input type="number" value="1" min="1" class="w-12 text-center border-none bg-transparent text-lg font-medium mx-2" id="quantity-input">
                             <button class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100" id="increase-quantity">+</button>
                         </div>
-                        <button id="add-to-cart" class="bg-primary text-white px-8 py-3 rounded-button font-medium hover:bg-blue-600 transition shadow-md whitespace-nowrap flex items-center"
-                            data-variant-id="{{ $product->variants->first()->id ?? '' }}">
+                        <button id="addToCart" class="bg-primary text-white px-8 py-3 rounded-button font-medium hover:bg-blue-600 transition shadow-md whitespace-nowrap flex items-center"
+                            data-variant-id="{{ $product->variants->first()->id ?? '' }}"
+                            data-login-url="{{ route('auth.login') }}?redirect={{ urlencode(request()->fullUrl()) }}">
                             <i class="ri-shopping-cart-2-line mr-2"></i> Thêm vào giỏ hàng
                         </button>
                         <button id="favorite-button" data-product-id="{{ $product->id }}" data-fav-url="{{ route('user.favorites.toggle') }}" data-login-url="{{ route('auth.login') }}" class="w-12 h-12 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
@@ -229,10 +230,84 @@
 @endsection
 
 @push('scripts')
-    <script>
-        // Truyền dữ liệu variants và discount từ backend sang JavaScript
+    <script>
+        // Truyền dữ liệu variants và discount từ backend sang JavaScript
         window.productVariants = @json($variantsData ?? []);
         window.productDiscount = {{ (int)($product->discount_percent ?? 0) }};
-    </script>
-    <script src="{{ asset('js/UserProductDetail.js') }}"></script>
+        // authentication flag for JS
+        window.isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
+    </script>
+    <script src="{{ asset('js/UserProductDetail.js') }}"></script>
+    
+    <script>
+        // Setup CSRF token for jQuery
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $(function(){
+            // add to cart handler
+            $('#addToCart').on('click', function(e){
+                e.preventDefault();
+                var variantId = $(this).attr('data-variant-id');
+                var qty = parseInt($('#quantity-input').val() || 1);
+
+                console.log('Add to cart clicked, variantId=', variantId, 'qty=', qty);
+
+                // If user not authenticated, redirect to login (do not use session cart)
+                var loginUrl = $(this).data('login-url') || '{{ route('auth.login') }}';
+                if (!window.isAuthenticated || window.isAuthenticated === 'false') {
+                    window.location.href = loginUrl;
+                    return;
+                }
+
+                if(!variantId) {
+                    toastr.error('Không xác định biến thể sản phẩm');
+                    console.error('Variant id missing on add-to-cart button');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route('user.cart.add') }}',
+                    method: 'POST',
+                    data: { variant_id: variantId, quantity: qty, product_id: '{{ $product->id }}' },
+                    dataType: 'json',
+                })
+                .done(function(res){
+                    console.log('Add to cart response', res);
+                    if(res && res.detail_variant !== undefined){
+                        console.log('Server saved variant id:', res.detail_variant);
+                    }
+                    if(res && res.success){
+                        // use global toastr defaults (position: top-right)
+                        // keep local overrides minimal (rely on global settings in master layout)
+                        toastr.success(res.message || 'Đã thêm vào giỏ hàng');
+                        // update cart count in header
+                        if(res.count !== undefined){
+                            $('#cart-count').text(res.count);
+                        }
+                    } else {
+                        toastr.error((res && res.message) || 'Không thể thêm vào giỏ hàng');
+                    }
+                })
+                .fail(function(xhr, status, error){
+                    console.error('Add to cart failed', status, error, xhr.responseText);
+                    var msg = 'Lỗi khi thêm vào giỏ hàng';
+                    if(xhr.status === 419){
+                        msg = 'Token bảo mật hết hạn. Vui lòng tải lại trang và thử lại.';
+                    } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                        // collect validation errors
+                        var errors = xhr.responseJSON.errors;
+                        msg = Object.values(errors).flat().join('\n');
+                    } else if(xhr.responseJSON && xhr.responseJSON.message){
+                        msg = xhr.responseJSON.message;
+                    }
+                    toastr.error(msg);
+                });
+            });
+        });
+    </script>
+    
 @endpush

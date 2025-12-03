@@ -3,13 +3,12 @@
     <!--begin::Sidebar Brand-->
     <div class="sidebar-brand">
         <!--begin::Brand Link-->
-        <a href="./index.html" class="brand-link">
+        <a href="{{ route('admin.dashboard') }}" class="brand-link">
             <!--begin::Brand Image-->
-            <img src="../../dist/assets/img/AdminLTELogo.png" alt="AdminLTE Logo"
-                class="brand-image opacity-75 shadow" />
+            <img src="{{ asset('storage/logo/admin.png') }}" alt="AdminLTE Logo" class="brand-image shadow" />
             <!--end::Brand Image-->
             <!--begin::Brand Text-->
-            <span class="brand-text fw-light">Admin</span>
+            <span class="brand-text fw-light">Quản trị viên</span>
             <!--end::Brand Text-->
         </a>
         <!--end::Brand Link-->
@@ -87,15 +86,19 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="./UI/general.html" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>người dùng</p>
+                            <a href="{{ route('admin.users.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
+                                <i
+                                    class="nav-icon bi {{ request()->routeIs('admin.users.index') ? 'bi-circle-fill' : 'bi-circle' }}"></i>
+                                <p>Danh sách người dùng</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="./UI/icons.html" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Admin</p>
+                            <a href="{{ route('admin.users.trashed') }}"
+                                class="nav-link {{ request()->routeIs('admin.users.trashed') ? 'active' : '' }}">
+                                <i
+                                    class="nav-icon bi {{ request()->routeIs('admin.users.trashed') ? 'bi-circle-fill' : 'bi-circle' }}"></i>
+                                <p>Tài khoản đã xóa</p>
                             </a>
                         </li>
                     </ul>

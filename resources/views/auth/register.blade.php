@@ -18,7 +18,7 @@
                         class="w-full pl-10 pr-4 py-3 rounded-button border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                         placeholder="Họ và tên" value="{{ old('name') }}">
                     @error('name')
-                        <p class="text-danger">{{ $message }}</p>
+                        <p class="text-red-500 italic">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
@@ -29,7 +29,7 @@
                         class="w-full pl-10 pr-4 py-3 rounded-button border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                         placeholder="Email" value="{{ old('email') }}">
                     @error('email')
-                        <p class="text-danger">{{ $message }}</p>
+                        <p class="text-red-500 italic">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
@@ -40,7 +40,7 @@
                         class="w-full pl-10 pr-4 py-3 rounded-button border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                         placeholder="Số điện thoại" value="{{ old('phone') }}">
                     @error('phone')
-                        <p class="text-danger">{{ $message }}</p>
+                        <p class="text-red-500 italic">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
@@ -50,7 +50,7 @@
                     class="w-full pl-10 pr-4 py-3 rounded-button border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     placeholder="Địa chỉ (không bắt buộc)" value="{{ old('address') }}">
                 @error('address')
-                    <p class="text-danger">{{ $message }}</p>
+                    <p class="text-red-500 italic">{{ $message }}</p>
                 @enderror
             </div>
             <div class="space-y-4">
@@ -60,7 +60,7 @@
                         class="w-full pl-10 pr-4 py-3 rounded-button border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                         placeholder="Mật khẩu">
                     @error('password')
-                        <p class="text-danger">{{ $message }}</p>
+                        <p class="text-red-500 italic">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
@@ -71,7 +71,7 @@
                         class="w-full pl-10 pr-4 py-3 rounded-button border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                         placeholder="Nhập lại mật khẩu">
                     @error('password_confirmation')
-                        <p class="text-danger">{{ $message }}</p>
+                        <p class="text-red-500 italic">{{ $message }}</p>
                     @enderror
                 </div>
             </div>

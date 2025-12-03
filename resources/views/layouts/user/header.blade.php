@@ -21,7 +21,7 @@
                         <ul>
                             @foreach($navCategories as $cat)
                                 <li>
-                                    <a href="{{ route('user.products', ['category_id' => $cat->id]) }}"
+                                    <a href="{{ route('user.products', ['category' => $cat->slug]) }}"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         {{ $cat->name }}
                                         <span class="text-xs text-gray-400">({{ $cat->products_count }})</span>
@@ -62,12 +62,21 @@
                     </form>
                 </div>
 
-                <div
+                <a href="{{ route('user.cart.index') }}"
                     class="relative w-10 h-10 flex items-center justify-center text-gray-700 hover:text-primary cursor-pointer">
                     <i class="ri-shopping-cart-2-line ri-lg"></i>
-                    <span
-                        class="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">3</span>
-                </div>
+                    @php
+                        $cartCount = 0;
+                        if (auth()->check()) {
+                            $cartCount = auth()->user()->cart ? auth()->user()->cart->items()->sum('quantity') : 0;
+                        } else {
+                            $cart = session('cart', []);
+                            $cartCount = $cart ? array_sum(array_column($cart, 'quantity')) : 0;
+                        }
+                    @endphp
+                    <span id="cart-count"
+                        class="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">{{ $cartCount }}</span>
+                </a>
 
                 <div class="relative flex items-center text-gray-700 cursor-pointer" x-data="{ open: false }">
 
@@ -85,20 +94,20 @@
                             class="absolute top-full right-0 mt-2 w-56 bg-white shadow-lg rounded-md py-2 z-50 overflow-hidden">
 
                             <li>
-                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 border-b">
                                     <i class="ri-info-card-line ri-lg"></i>
                                     Thông tin tài khoản
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 border-b">
                                     <i class="ri-heart-line ri-lg"></i>
                                     Sản phẩm yêu thích
                                 </a>
                             </li>
                             </li>
                             <li>
-                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 border-b">
                                     <i class="ri-file-list-line ri-lg"></i>
                                     Theo dõi đơn hàng
                                 </a>
@@ -107,7 +116,7 @@
                             <li>
                                 <a href="{{ route('auth.logout') }}"
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                                    class="block px-4 py-2 hover:bg-gray-100">
+                                    class="block px-4 py-2 hover:bg-gray-100 text-red-600">
                                     <i class="ri-logout-box-r-line ri-lg"></i>
                                     Đăng xuất
                                 </a>
@@ -177,7 +186,7 @@
                 <div class="text-sm font-medium mb-2">Danh mục</div>
                 <div class="grid grid-cols-1 gap-1">
                     @foreach($mobileCats as $cat)
-                        <a href="{{ route('user.products', ['category_id' => $cat->id]) }}"
+                        <a href="{{ route('user.products', ['category' => $cat->slug]) }}"
                             class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-gray-100">{{ $cat->name }}
                             <span class="text-xs text-gray-400">({{ $cat->products_count }})</span></a>
                     @endforeach

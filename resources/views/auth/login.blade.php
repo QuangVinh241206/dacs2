@@ -7,6 +7,11 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-1">Đăng nhập</h2>
             <p class="text-gray-500 text-sm">Chào mừng bạn quay trở lại!</p>
         </div>
+        @if (session('status'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" role="alert">
+                {{ session('status') }}
+            </div>
+        @endif
         <form method="POST" action="{{ route('auth.login.post') }}">
             @csrf
             <div class="mb-4">
@@ -15,7 +20,7 @@
                     class="w-full px-4 py-3 rounded-button border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     placeholder="Nhập email của bạn" value="{{ old('email') }}">
                 @error('email')
-                    <p class="text-danger">{{ $message }}</p>
+                    <p class="text-red-500 italic">{{ $message }}</p>
                 @enderror
             </div>
             <div class="mb-4">
@@ -24,11 +29,11 @@
                     class="w-full px-4 py-3 rounded-button border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     placeholder="Nhập mật khẩu">
                 @error('password')
-                    <p class="text-danger">{{ $message }}</p>
+                    <p class="text-red-500 italic">{{ $message }}</p>
                 @enderror
             </div>
             <div class="flex items-center justify-between mb-6">
-                <a href="#" class="text-primary text-sm hover:underline">Quên mật khẩu?</a>
+                <a href="{{ route('auth.forgot') }}" class="text-primary text-sm hover:underline">Quên mật khẩu?</a>
             </div>
             <button type="submit"
                 class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-blue-600 transition">Đăng

@@ -30,6 +30,7 @@
                             <thead>
                                 <tr>
                                     <th style="width:60px">#</th>
+                                    <th>Ảnh</th>
                                     <th>Tên sản phẩm</th>
                                     <th>Danh mục</th>
                                     <th>Số biến thể</th>
@@ -42,7 +43,9 @@
                                 @foreach($products as $p)
                                     <tr>
                                         <td>{{ $p->id }}</td>
-                                        <td>{{ $p->name }}</td>
+                                        <td><img src="{{ asset('storage/' . ($p->images->where('is_main', true)->first()->image_url ?? '')) }}"
+                                                alt="{{ $p->name }}" style="max-width: 100px;"></td>
+                                        <td>{{ $p->name }}</td>    
                                         <td>{{ optional($p->category)->name }}</td>
                                         <td>{{ $p->variants->count() }}</td>
                                         <td>

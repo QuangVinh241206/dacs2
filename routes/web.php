@@ -12,12 +12,19 @@ Route::prefix('auth')->group(function () {
     Route::get('login', function () {
         return view('auth.login');
     })->name('auth.login');
+    Route::get('forgot', [\App\Http\Controllers\AuthController::class, 'showForgotForm'])->name('auth.forgot');
+    Route::post('forgot', [\App\Http\Controllers\AuthController::class, 'sendResetLink'])->name('auth.forgot.post');
     Route::post('login', [\App\Http\Controllers\AuthController::class, 'login'])->name('auth.login.post');
     Route::get('register', function () {
         return view('auth.register');
     })->name('auth.register');
     Route::post('register', [\App\Http\Controllers\AuthController::class, 'register'])->name('auth.register.post');
     Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('auth.logout');
+
+    Route::get('reset/{token}', [\App\Http\Controllers\AuthController::class, 'showResetForm'])->name('auth.reset');
+    // Alias route name used by Laravel Password broker when generating reset links
+    Route::get('password/reset/{token}', [\App\Http\Controllers\AuthController::class, 'showResetForm'])->name('password.reset');
+    Route::post('reset', [\App\Http\Controllers\AuthController::class, 'resetPassword'])->name('auth.reset.post');
 });
 
 
@@ -33,13 +40,18 @@ Route::prefix('user')->group(function () {
     Route::get('products', [\App\Http\Controllers\User\ProductController::class, 'index'])->name('user.products');
     Route::post('favorites/toggle', [\App\Http\Controllers\User\FavoriteController::class, 'toggle'])->name('user.favorites.toggle');
     Route::post('products/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->name('user.reviews.store');
+    Route::post('cart/add', [\App\Http\Controllers\User\CartController::class, 'add'])->name('user.cart.add');
+    Route::get('cart', [\App\Http\Controllers\User\CartController::class, 'index'])->name('user.cart.index');
+    Route::post('cart/update', [\App\Http\Controllers\User\CartController::class, 'update'])->name('user.cart.update');
+    Route::delete('cart/{detail}', [\App\Http\Controllers\User\CartController::class, 'destroy'])->name('user.cart.destroy');
+    Route::post('checkout', [\App\Http\Controllers\User\CartController::class, 'checkout'])->name('user.cart.checkout');
     Route::get('products/discounts', [\App\Http\Controllers\User\HomeController::class, 'discounts'])->name('user.products.discounts');
     Route::get('products/new-arrivals', [\App\Http\Controllers\User\HomeController::class, 'newArrivals'])->name('user.products.new');
     Route::post('products/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->name('user.reviews.store');
 });
 
 // Admin product management
-Route::prefix('admin')->group(function () {
+Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
@@ -82,4 +94,13 @@ Route::prefix('admin')->group(function () {
     Route::get('products/{product}/edit', [\App\Http\Controllers\Admin\ProductController::class, 'edit'])->name('admin.products.edit');
     Route::put('products/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'update'])->name('admin.products.update');
     Route::delete('products/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'destroy'])->name('admin.products.destroy');
+
+    // Admin user management
+    Route::get('users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('admin.users.index');
+    Route::get('users/trashed', [\App\Http\Controllers\Admin\UserController::class, 'trashed'])->name('admin.users.trashed');
+    Route::get('users/{user}/edit', [\App\Http\Controllers\Admin\UserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::post('users/{user}/restore', [\App\Http\Controllers\Admin\UserController::class, 'restore'])->name('admin.users.restore');
+    Route::delete('users/{user}/force-delete', [\App\Http\Controllers\Admin\UserController::class, 'forceDelete'])->name('admin.users.forceDelete');
 });

@@ -6,7 +6,7 @@
 
     var priceEl = document.getElementById("price-display");
     var origEl = document.getElementById("original-price");
-    var addBtn = document.getElementById("add-to-cart");
+    var addBtn = document.getElementById("addToCart");
     var colorContainer = document.getElementById("color-buttons-container");
     var sizeButtons = document.querySelectorAll(".size-button");
 
@@ -364,6 +364,9 @@
         if (stock >= parseInt(quantityInput.value) + 1) {
             let current = parseInt(quantityInput.value) || 1;
             quantityInput.value = current + 1;
+        }
+        else {
+            toastr.error('Chỉ còn ' + stock + ' sản phẩm trong kho.');
         }
     }
 

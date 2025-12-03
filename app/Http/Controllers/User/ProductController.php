@@ -23,8 +23,12 @@ class ProductController extends Controller
             });
         }
 
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->get('category_id'));
+        // Filter by category slug (use 'category' query param)
+        if ($request->filled('category')) {
+            $slug = $request->get('category');
+            $query->whereHas('category', function ($cq) use ($slug) {
+                $cq->where('slug', $slug);
+            });
         }
 
         if ($request->filled('price_min') || $request->filled('price_max')) {

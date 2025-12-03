@@ -15,10 +15,10 @@
 
                     <div class="mb-4">
                         <h4 class="font-medium text-gray-800 mb-2">Danh mục</h4>
-                        <select name="category_id" class="w-full form-select border rounded-md px-3 py-2">
+                        <select name="category" class="w-full form-select border rounded-md px-3 py-2">
                             <option value="">Tất cả danh mục</option>
                             @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                <option value="{{ $cat->slug }}" {{ request('category') == $cat->slug ? 'selected' : '' }}>{{ $cat->name }}</option>
                             @endforeach
                         </select>
                     </div>
