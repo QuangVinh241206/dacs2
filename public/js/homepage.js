@@ -134,6 +134,8 @@ document.addEventListener('DOMContentLoaded', function() {
         products.forEach(product => {
             const name = escapeHtml(product.name);
             const price = product.price ? new Intl.NumberFormat('vi-VN').format(product.price) + '₫' : 'Liên hệ';
+            console.log(price);
+            
             const reason = product.reason ? escapeHtml(product.reason) : 'Sản phẩm phù hợp';
             const thumbnail = product.thumbnail ? escapeHtml(product.thumbnail) : '/images/placeholder.png';
             const productUrl = `/user/products/${escapeHtml(product.slug)}`;

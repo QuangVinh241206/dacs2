@@ -57,6 +57,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'phone' => 'required|string|max:15',
+            'address' => 'nullable|string|max:255',
             'password' => 'required|min:6|confirmed',
         ], [
             'name.required' => 'Vui lòng nhập họ và tên.',
@@ -64,6 +65,7 @@ class AuthController extends Controller
             'email.email' => 'Định dạng email không hợp lệ.',
             'email.unique' => 'Email đã được sử dụng.',
             'phone.required' => 'Vui lòng nhập số điện thoại.',
+            'address.max' => 'Địa chỉ không được vượt quá :max ký tự.',
             'password.required' => 'Vui lòng nhập mật khẩu.',
             'password.min' => 'Mật khẩu phải có ít nhất :min ký tự.',
             'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
@@ -73,6 +75,7 @@ class AuthController extends Controller
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'phone' => $validatedData['phone'],
+            'address' => $validatedData['address'] ?? '',
             'password' => bcrypt($validatedData['password']),
         ]);
 

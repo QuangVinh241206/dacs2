@@ -22,7 +22,7 @@ class VoucherController extends Controller
             $query->where('is_active', $request->get('is_active'));
         }
 
-        $vouchers = $query->orderBy('id', 'desc')->paginate(20);
+        $vouchers = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
         return view('admin.vouchers.listVoucher', compact('vouchers'));
     }
 
@@ -37,8 +37,8 @@ class VoucherController extends Controller
             'code' => 'required|string|unique:vouchers,code',
             'discount_type' => 'required|in:percent,fixed',
             'discount_value' => 'required|numeric|min:0',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
             'min_order_value' => 'nullable|numeric|min:0',
             'max_discount_value' => 'nullable|numeric|min:0',
         ];

@@ -32,13 +32,17 @@ Route::prefix('auth')->group(function () {
 });
 
 
-Route::prefix('user')->group(function () {
+Route::prefix('user')->middleware('auth')->group(function () {
     route::get('about', function () {
         return view('user.about');
     })->name('user.about');
     route::get('contact', function () {
         return view('user.contact');
     })->name('user.contact');
+    // Account management
+    Route::get('account', [\App\Http\Controllers\User\AccountController::class, 'index'])->name('user.account.index');
+    Route::put('account', [\App\Http\Controllers\User\AccountController::class, 'update'])->name('user.account.update');
+    Route::post('account/change-password', [\App\Http\Controllers\User\AccountController::class, 'changePassword'])->name('user.account.changePassword');
     // Product detail by slug - must be BEFORE generic products route
     Route::get('products/{slug}', [\App\Http\Controllers\User\ProductController::class, 'show'])->name('user.productDetail');
     // Generic products list
@@ -108,4 +112,15 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::delete('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.users.destroy');
     Route::post('users/{user}/restore', [\App\Http\Controllers\Admin\UserController::class, 'restore'])->name('admin.users.restore');
     Route::delete('users/{user}/force-delete', [\App\Http\Controllers\Admin\UserController::class, 'forceDelete'])->name('admin.users.forceDelete');
+
+    // Admin order management
+    Route::get('orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
+    Route::patch('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    Route::delete('orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('admin.orders.destroy');
+
+    // Trashed orders management
+    Route::get('orders-trashed', [\App\Http\Controllers\Admin\OrderController::class, 'trashed'])->name('admin.orders.trashed');
+    Route::post('orders/{id}/restore', [\App\Http\Controllers\Admin\OrderController::class, 'restore'])->name('admin.orders.restore');
+    Route::delete('orders/{id}/force-delete', [\App\Http\Controllers\Admin\OrderController::class, 'forceDelete'])->name('admin.orders.forceDelete');
 });

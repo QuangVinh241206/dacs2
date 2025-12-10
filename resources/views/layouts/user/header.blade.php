@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between h-16">
             <!-- Logo + Categories button -->
             <div class="flex items-center space-x-4">
-                <a href="{{ route('home') }}" class="text-2xl font-['Pacifico'] text-primary">logo</a>
+                <a href="{{ route('home') }}" class="text-2xl font-['Pacifico'] text-primary">Giường Đẹp</a>
 
                 @php
                     $navCategories = \App\Models\Category::withCount('products')->orderBy('name')->get();
@@ -94,7 +94,8 @@
                             class="absolute top-full right-0 mt-2 w-56 bg-white shadow-lg rounded-md py-2 z-50 overflow-hidden">
 
                             <li>
-                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 border-b">
+                                <a href="{{ route('user.account.index') }}"
+                                    class="block px-4 py-2 hover:bg-gray-100 border-b">
                                     <i class="ri-info-card-line ri-lg"></i>
                                     Thông tin tài khoản
                                 </a>

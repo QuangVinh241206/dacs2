@@ -9,7 +9,8 @@
                     liệu bền bỉ và giá cả hợp lý.</p>
                 <div class="flex flex-wrap gap-4">
                     <a href="{{ route('user.products') }}"
-                        class="bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-blue-600 transition shadow-md whitespace-nowrap">Mua ngay</a>
+                        class="bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-blue-600 transition shadow-md whitespace-nowrap">Mua
+                        ngay</a>
                 </div>
             </div>
         </div>
@@ -28,7 +29,7 @@
                     $icons = ['ri-home-line', 'ri-layout-2-line', 'ri-settings-line', 'ri-hotel-bed-line'];
                 @endphp
                 @foreach($topCategories as $index => $cat)
-                    <a href="{{ route('user.products', ['category_id' => $cat->id]) }}" class="block">
+                    <a href="{{ route('user.products', ['category' => $cat->slug]) }}" class="block">
                         <div class="bg-gray-50 rounded-lg p-6 text-center hover:shadow-md transition">
                             <div
                                 class="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-blue-50 rounded-full text-primary">

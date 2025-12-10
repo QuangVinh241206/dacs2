@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\ProductSeeder;
+use Database\Seeders\UserSeeder;
+use Database\Seeders\VoucherSeeder;
+use Database\Seeders\OrderSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,17 +22,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        // create a test user matching our users table (no email_verified_at column)
-        User::create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => Hash::make('password'),
-            'remember_token' => Str::random(10),
-        ]);
-
-        // categories and products
+        // categories and products first
         $this->call([CategorySeeder::class, ProductSeeder::class]);
+
+        // then users and vouchers
+        $this->call([UserSeeder::class, VoucherSeeder::class]);
+
+        // finally orders and order details
+        $this->call([OrderSeeder::class]);
     }
 }
