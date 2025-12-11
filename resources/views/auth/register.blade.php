@@ -9,7 +9,7 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-1">Đăng ký tài khoản</h2>
             <p class="text-gray-500 text-sm">Tạo tài khoản mới để mua sắm dễ dàng hơn!</p>
         </div>
-        <form method="POST" action="{{ route('auth.register.post') }}" class="space-y-4">
+        <form method="POST" action="{{ route('register.post') }}" class="space-y-4">
             @csrf
             <div class="space-y-4">
                 <div class="relative">
@@ -81,7 +81,7 @@
         </form>
         <div class="mt-6 text-center text-sm text-gray-600">
             Đã có tài khoản?
-            <a href="{{ route('auth.login') }}" class="text-primary hover:underline">Đăng nhập</a>
+            <a href="{{ route('login') }}" class="text-primary hover:underline">Đăng nhập</a>
         </div>
     </div>
 @endsection

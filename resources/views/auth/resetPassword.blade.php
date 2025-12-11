@@ -6,7 +6,7 @@
             <i class="ri-user-line text-primary text-4xl mb-2"></i>
             <h2 class="text-2xl font-bold text-gray-900 mb-1">Đổi mật khẩu</h2>
         </div>
-        <form method="POST" action="{{ route('auth.reset.post') }}">
+        <form method="POST" action="{{ route('reset.post') }}">
             @csrf
             <input type="hidden" name="token" value="{{ $token ?? request('token') }}">
             <div class="mb-4">

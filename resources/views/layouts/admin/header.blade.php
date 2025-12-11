@@ -36,14 +36,15 @@
                         </div>
                     </li>
 
-                    <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="bi bi-person me-2"></i>
+                    <li><a class="dropdown-item d-flex align-items-center" href="{{ route('admin.profile') }}"><i
+                                class="bi bi-person me-2"></i>
                             Thông tin cá nhân</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
 
                     <li>
-                        <form action="{{ route('auth.logout') }}" method="POST" class="m-0">
+                        <form action="{{ route('logout') }}" method="POST" class="m-0">
                             @csrf
                             <button type="submit" class="dropdown-item d-flex align-items-center text-danger"><i
                                     class="bi bi-box-arrow-right me-2"></i> Đăng xuất</button>

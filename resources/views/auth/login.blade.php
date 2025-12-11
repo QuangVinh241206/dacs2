@@ -12,7 +12,7 @@
                 {{ session('status') }}
             </div>
         @endif
-        <form method="POST" action="{{ route('auth.login.post') }}">
+        <form method="POST" action="{{ route('login.post') }}">
             @csrf
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2" for="email">Email</label>
@@ -33,7 +33,7 @@
                 @enderror
             </div>
             <div class="flex items-center justify-between mb-6">
-                <a href="{{ route('auth.forgot') }}" class="text-primary text-sm hover:underline">Quên mật khẩu?</a>
+                <a href="{{ route('forgot') }}" class="text-primary text-sm hover:underline">Quên mật khẩu?</a>
             </div>
             <button type="submit"
                 class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-blue-600 transition">Đăng
@@ -41,7 +41,7 @@
         </form>
         <div class="mt-6 text-center text-sm text-gray-600">
             Chưa có tài khoản?
-            <a href="{{ route('auth.register') }}" class="text-primary hover:underline">Đăng ký ngay</a>
+            <a href="{{ route('register') }}" class="text-primary hover:underline">Đăng ký ngay</a>
         </div>
     </div>
 @endsection

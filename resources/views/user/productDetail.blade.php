@@ -4,6 +4,25 @@
     <!-- Product Detail Section -->
     <section class="py-12 bg-white">
         <div class="container mx-auto px-4">
+            <!-- Breadcrumb Navigation -->
+            <nav class="flex mb-6" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{{ route('user.products') }}"
+                           class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary transition-colors duration-200">
+                            <i class="ri-home-line mr-1"></i>
+                            Sản phẩm
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <i class="ri-arrow-right-s-line text-gray-400 mx-1"></i>
+                            <span class="text-sm font-medium text-gray-500">{{ $product->name ?? 'Chi tiết sản phẩm' }}</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+
             <div class="flex flex-col md:flex-row gap-10">
                 <!-- Product Images -->
                 <div class="md:w-1/2">
@@ -108,10 +127,10 @@
                         </div>
                         <button id="addToCart" class="bg-primary text-white px-8 py-3 rounded-button font-medium hover:bg-blue-600 transition shadow-md whitespace-nowrap flex items-center"
                             data-variant-id="{{ $product->variants->first()->id ?? '' }}"
-                            data-login-url="{{ route('auth.login') }}?redirect={{ urlencode(request()->fullUrl()) }}">
+                            data-login-url="{{ route('login') }}?redirect={{ urlencode(request()->fullUrl()) }}">
                             <i class="ri-shopping-cart-2-line mr-2"></i> Thêm vào giỏ hàng
                         </button>
-                        <button id="favorite-button" data-product-id="{{ $product->id }}" data-fav-url="{{ route('user.favorites.toggle') }}" data-login-url="{{ route('auth.login') }}" class="w-12 h-12 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+                        <button id="favorite-button" data-product-id="{{ $product->id }}" data-fav-url="{{ route('user.favorites.toggle') }}" data-login-url="{{ route('login') }}" class="w-12 h-12 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
                             @if(isset($isFavorited) && $isFavorited)
                                 <i class="ri-heart-fill text-2xl text-red-500"></i>
                             @else
@@ -257,7 +276,7 @@
                 console.log('Add to cart clicked, variantId=', variantId, 'qty=', qty);
 
                 // If user not authenticated, redirect to login (do not use session cart)
-                var loginUrl = $(this).data('login-url') || '{{ route('auth.login') }}';
+                var loginUrl = $(this).data('login-url') || '{{ route('login') }}';
                 if (!window.isAuthenticated || window.isAuthenticated === 'false') {
                     window.location.href = loginUrl;
                     return;

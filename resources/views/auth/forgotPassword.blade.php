@@ -6,7 +6,7 @@
             <i class="ri-user-line text-primary text-4xl mb-2"></i>
             <h2 class="text-2xl font-bold text-gray-900 mb-1">Quên mật khẩu</h2>
         </div>
-        <form method="POST" action="{{ route('auth.forgot.post') }}">
+        <form method="POST" action="{{ route('forgot.post') }}">
             @csrf
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2" for="email">Nhập email của bạn</label>

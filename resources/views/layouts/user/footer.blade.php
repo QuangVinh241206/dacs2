@@ -28,9 +28,9 @@
             <div>
                 <h3 class="text-lg font-semibold mb-4">Tài khoản</h3>
                 <ul class="space-y-2">
-                    <li><a href="#" class="text-gray-400 hover:text-white transition">Tài khoản của tôi</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white transition">Theo dõi đơn hàng</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white transition">Danh sách yêu thích</a></li>
+                    <li><a href="{{ route('user.account.index') }}" class="text-gray-400 hover:text-white transition">Tài khoản của tôi</a></li>
+                    <li><a href="" class="text-gray-400 hover:text-white transition">Theo dõi đơn hàng</a></li>
+                    <li><a href="" class="text-gray-400 hover:text-white transition">Danh sách yêu thích</a></li>
                 </ul>
             </div>
 

@@ -72,7 +72,14 @@
             <div class="w-full md:w-3/4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($products as $product)
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1.5 transition  ">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1.5 transition relative">
+                    <!-- Favorite Button -->
+                    <button class="absolute top-3 right-3 w-8 h-8 bg-white bg-opacity-80 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 transition favorite-btn z-10 {{ in_array($product->id, $userFavorites ?? []) ? 'text-red-500' : '' }}"
+                            data-product-id="{{ $product->id }}"
+                            title="{{ in_array($product->id, $userFavorites ?? []) ? 'Bỏ yêu thích' : 'Thêm vào yêu thích' }}">
+                        <i class="ri-heart-{{ in_array($product->id, $userFavorites ?? []) ? 'fill' : 'line' }}"></i>
+                    </button>
+
                     <a href="{{ route('user.productDetail',$product->slug) }}">
                         <div class="h-56 bg-gray-100">
                             @if($product->images->count())
@@ -127,6 +134,63 @@
                     priceMaxInput.value = this.value;
                 });
             }
+
+            // Handle favorite toggle
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const productId = this.dataset.productId;
+                    const icon = this.querySelector('i');
+
+                    // Check if user is authenticated
+                    if (!@json($isAuthenticated)) {
+                        window.location.href = '{{ route("login") }}';
+                        return;
+                    }
+
+                    // Disable button during request
+                    this.disabled = true;
+                    const originalIcon = icon.className;
+
+                    fetch('{{ route("user.favorites.toggle") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            product_id: productId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'added') {
+                            // Product added to favorites
+                            this.classList.add('text-red-500');
+                            this.classList.remove('text-gray-400');
+                            icon.className = 'ri-heart-fill';
+                            this.title = 'Bỏ yêu thích';
+                            toastr.success('Đã thêm vào danh sách yêu thích!');
+                        } else if (data.status === 'removed') {
+                            // Product removed from favorites
+                            this.classList.remove('text-red-500');
+                            this.classList.add('text-gray-400');
+                            icon.className = 'ri-heart-line';
+                            this.title = 'Thêm vào yêu thích';
+                            toastr.success('Đã bỏ khỏi danh sách yêu thích!');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        toastr.error('Có lỗi xảy ra. Vui lòng thử lại.');
+                    })
+                    .finally(() => {
+                        this.disabled = false;
+                    });
+                });
+            });
         });
     </script>
 @endsection

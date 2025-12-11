@@ -12,24 +12,23 @@ Route::post('/chat/query', [\App\Http\Controllers\ChatController::class, 'query'
 
 
 // Authentication routes
-Route::prefix('auth')->group(function () {
-    Route::get('login', function () {
-        return view('auth.login');
-    })->name('auth.login');
-    Route::get('forgot', [\App\Http\Controllers\AuthController::class, 'showForgotForm'])->name('auth.forgot');
-    Route::post('forgot', [\App\Http\Controllers\AuthController::class, 'sendResetLink'])->name('auth.forgot.post');
-    Route::post('login', [\App\Http\Controllers\AuthController::class, 'login'])->name('auth.login.post');
-    Route::get('register', function () {
-        return view('auth.register');
-    })->name('auth.register');
-    Route::post('register', [\App\Http\Controllers\AuthController::class, 'register'])->name('auth.register.post');
-    Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('auth.logout');
 
-    Route::get('reset/{token}', [\App\Http\Controllers\AuthController::class, 'showResetForm'])->name('auth.reset');
-    // Alias route name used by Laravel Password broker when generating reset links
-    Route::get('password/reset/{token}', [\App\Http\Controllers\AuthController::class, 'showResetForm'])->name('password.reset');
-    Route::post('reset', [\App\Http\Controllers\AuthController::class, 'resetPassword'])->name('auth.reset.post');
-});
+Route::get('login', function () {
+    return view('auth.login');
+})->name('login');
+Route::get('forgot', [\App\Http\Controllers\AuthController::class, 'showForgotForm'])->name('forgot');
+Route::post('forgot', [\App\Http\Controllers\AuthController::class, 'sendResetLink'])->name('forgot.post');
+Route::post('login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login.post');
+Route::get('register', function () {
+    return view('auth.register');
+})->name('register');
+Route::post('register', [\App\Http\Controllers\AuthController::class, 'register'])->name('register.post');
+Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
+Route::get('reset/{token}', [\App\Http\Controllers\AuthController::class, 'showResetForm'])->name('reset');
+// Alias route name used by Laravel Password broker when generating reset links
+Route::get('password/reset/{token}', [\App\Http\Controllers\AuthController::class, 'showResetForm'])->name('password.reset');
+Route::post('reset', [\App\Http\Controllers\AuthController::class, 'resetPassword'])->name('reset.post');
 
 
 Route::prefix('user')->middleware('auth')->group(function () {
@@ -48,6 +47,7 @@ Route::prefix('user')->middleware('auth')->group(function () {
     // Generic products list
     Route::get('products', [\App\Http\Controllers\User\ProductController::class, 'index'])->name('user.products');
     Route::post('favorites/toggle', [\App\Http\Controllers\User\FavoriteController::class, 'toggle'])->name('user.favorites.toggle');
+    Route::get('favorites', [\App\Http\Controllers\User\FavoriteController::class, 'index'])->name('user.favorites.index');
     Route::post('products/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->name('user.reviews.store');
     Route::post('cart/add', [\App\Http\Controllers\User\CartController::class, 'add'])->name('user.cart.add');
     Route::get('cart', [\App\Http\Controllers\User\CartController::class, 'index'])->name('user.cart.index');
@@ -112,6 +112,10 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::delete('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.users.destroy');
     Route::post('users/{user}/restore', [\App\Http\Controllers\Admin\UserController::class, 'restore'])->name('admin.users.restore');
     Route::delete('users/{user}/force-delete', [\App\Http\Controllers\Admin\UserController::class, 'forceDelete'])->name('admin.users.forceDelete');
+
+    // Admin profile
+    Route::get('profile', [\App\Http\Controllers\Admin\UserController::class, 'profile'])->name('admin.profile');
+    Route::put('profile', [\App\Http\Controllers\Admin\UserController::class, 'updateProfile'])->name('admin.profile.update');
 
     // Admin order management
     Route::get('orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders.index');

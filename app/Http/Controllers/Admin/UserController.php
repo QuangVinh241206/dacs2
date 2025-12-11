@@ -117,4 +117,44 @@ class UserController extends Controller
         $user->forceDelete();
         return redirect()->route('admin.users.trashed')->with('success', 'Người dùng đã bị xóa vĩnh viễn');
     }
+
+    // show admin profile
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('admin.users.profile', compact('user'));
+    }
+
+    // update admin profile
+    public function updateProfile(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'current_password' => 'nullable|string',
+            'password' => 'nullable|string|min:6|confirmed',
+        ]);
+
+        // Check current password if changing password
+        if (!empty($data['password'])) {
+            if (!Hash::check($data['current_password'], $user->password)) {
+                return redirect()->back()->withErrors(['current_password' => 'Mật khẩu hiện tại không đúng']);
+            }
+            $data['password'] = Hash::make($data['password']);
+        }
+
+        // Remove password fields from data
+        unset($data['current_password']);
+        if (empty($data['password'])) {
+            unset($data['password']);
+        }
+
+        $user->update($data);
+
+        return redirect()->back()->with('success', 'Thông tin cá nhân đã được cập nhật thành công');
+    }
 }

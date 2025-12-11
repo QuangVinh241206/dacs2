@@ -101,7 +101,8 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 border-b">
+                                <a href="{{ route('user.favorites.index') }}"
+                                    class="block px-4 py-2 hover:bg-gray-100 border-b">
                                     <i class="ri-heart-line ri-lg"></i>
                                     Sản phẩm yêu thích
                                 </a>
@@ -115,7 +116,7 @@
                             </li>
 
                             <li>
-                                <a href="{{ route('auth.logout') }}"
+                                <a href="{{ route('logout') }}"
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                                     class="block px-4 py-2 hover:bg-gray-100 text-red-600">
                                     <i class="ri-logout-box-r-line ri-lg"></i>
@@ -123,7 +124,7 @@
                                 </a>
                             </li>
 
-                            <form id="logout-form" action="{{ route('auth.logout') }}" method="POST" class="hidden">
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                                 @csrf
                             </form>
                         </ul>
@@ -131,7 +132,7 @@
 
                     @else
                         <!-- Khi chưa đăng nhập -->
-                        <a href="{{ route('auth.login') }}" class="flex items-center space-x-2 hover:text-primary">
+                        <a href="{{ route('login') }}" class="flex items-center space-x-2 hover:text-primary">
                             <i class="ri-user-line ri-lg"></i>
                             <span class="text-sm">Đăng nhập</span>
                         </a>

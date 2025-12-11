@@ -65,7 +65,15 @@ class ProductController extends Controller
         $sizes = \App\Models\ProductVariant::select('size')->distinct()->pluck('size')->filter()->values();
         $materials = Product::select('material')->whereNotNull('material')->distinct()->pluck('material')->filter()->values();
 
-        return view('user.products', compact('products', 'categories', 'sizes', 'materials'));
+        // Get user's favorite product IDs for heart button states
+        $userFavorites = [];
+        if (Auth::check()) {
+            $userFavorites = \App\Models\Favorite::where('user_id', Auth::id())->pluck('product_id')->toArray();
+        }
+
+        $isAuthenticated = Auth::check();
+
+        return view('user.products', compact('products', 'categories', 'sizes', 'materials', 'userFavorites', 'isAuthenticated'));
     }
 
     /**
