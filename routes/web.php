@@ -31,7 +31,7 @@ Route::get('password/reset/{token}', [\App\Http\Controllers\AuthController::clas
 Route::post('reset', [\App\Http\Controllers\AuthController::class, 'resetPassword'])->name('reset.post');
 
 
-Route::prefix('user')->middleware('auth')->group(function () {
+Route::prefix('user')->group(function () {
     route::get('about', function () {
         return view('user.about');
     })->name('user.about');
@@ -46,17 +46,18 @@ Route::prefix('user')->middleware('auth')->group(function () {
     Route::get('products/{slug}', [\App\Http\Controllers\User\ProductController::class, 'show'])->name('user.productDetail');
     // Generic products list
     Route::get('products', [\App\Http\Controllers\User\ProductController::class, 'index'])->name('user.products');
-    Route::post('favorites/toggle', [\App\Http\Controllers\User\FavoriteController::class, 'toggle'])->name('user.favorites.toggle');
-    Route::get('favorites', [\App\Http\Controllers\User\FavoriteController::class, 'index'])->name('user.favorites.index');
-    Route::post('products/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->name('user.reviews.store');
-    Route::post('cart/add', [\App\Http\Controllers\User\CartController::class, 'add'])->name('user.cart.add');
-    Route::get('cart', [\App\Http\Controllers\User\CartController::class, 'index'])->name('user.cart.index');
-    Route::post('cart/update', [\App\Http\Controllers\User\CartController::class, 'update'])->name('user.cart.update');
-    Route::delete('cart/{detail}', [\App\Http\Controllers\User\CartController::class, 'destroy'])->name('user.cart.destroy');
-    Route::post('checkout', [\App\Http\Controllers\User\CartController::class, 'checkout'])->name('user.cart.checkout');
+    Route::post('favorites/toggle', [\App\Http\Controllers\User\FavoriteController::class, 'toggle'])->middleware('auth')->name('user.favorites.toggle');
+    Route::get('favorites', [\App\Http\Controllers\User\FavoriteController::class, 'index'])->middleware('auth')->name('user.favorites.index');
+    Route::post('products/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->middleware('auth')->name('user.reviews.store');
+    Route::post('cart/add', [\App\Http\Controllers\User\CartController::class, 'add'])->middleware('auth')->name('user.cart.add');
+    Route::get('cart', [\App\Http\Controllers\User\CartController::class, 'index'])->middleware('auth')->name('user.cart.index');
+    Route::post('cart/update', [\App\Http\Controllers\User\CartController::class, 'update'])->middleware('auth')->name('user.cart.update');
+    Route::post('cart/update', [\App\Http\Controllers\User\CartController::class, 'update'])->middleware('auth')->name('user.cart.update');
+    Route::delete('cart/{detail}', [\App\Http\Controllers\User\CartController::class, 'destroy'])->middleware('auth')->name('user.cart.destroy');
+    Route::post('checkout', [\App\Http\Controllers\User\CartController::class, 'checkout'])->middleware('auth')->name('user.cart.checkout');
     Route::get('products/discounts', [\App\Http\Controllers\User\HomeController::class, 'discounts'])->name('user.products.discounts');
     Route::get('products/new-arrivals', [\App\Http\Controllers\User\HomeController::class, 'newArrivals'])->name('user.products.new');
-    Route::post('products/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->name('user.reviews.store');
+    Route::post('products/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->middleware('auth')->name('user.reviews.store');
 });
 
 // Admin product management
