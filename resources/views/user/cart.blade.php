@@ -53,7 +53,7 @@
 
                                 <div class="flex items-center space-x-4">
                                     <!-- Product Image -->
-                                    <div class="w-20 h-20 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                                    <div class="w-20 h-20 bg-gray-200 rounded-lg overflow-hidden shrink-0">
                                         @if($item->product->images->first())
                                             <img src="{{ asset('storage/' . $item->product->images->where('is_main', true)->first()->image_url) }}"
                                                 alt="{{ $item->product->name }}" class="w-full h-full object-cover">
@@ -98,8 +98,7 @@
                 </div>
 
                 <!-- Total and Checkout -->
-                <form id="checkout-form" action="{{ route('user.cart.checkout') }}" method="POST">
-                    @csrf
+                <form id="checkout-form" action="{{ route('user.checkout.show') }}" method="GET">
                     <div id="selected-items-container"></div>
                     <div class="bg-white rounded-lg shadow-sm p-6">
                         <div class="flex justify-between items-center mb-4">
@@ -257,11 +256,23 @@
                 });
 
                 // Form submit for checkout - ensure selected items are updated
-                $('#checkout-form').submit(function () {
+                $('#checkout-form').submit(function (e) {
                     updateTotal();
+
+                    // Check if any items are selected
+                    const selectedCount = $('.item-checkbox:checked').length;
+                    if (selectedCount === 0) {
+                        e.preventDefault();
+                        toastr.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                        return false;
+                    }
+
+                    // Show loading state
+                    $('#checkout-btn').prop('disabled', true).text('Đang xử lý...');
                 });
 
-                // Initial total
+                // Initial total - select all items by default
+                $('#select-all').prop('checked', true).trigger('change');
                 updateTotal();
             });
         </script>

@@ -48,17 +48,39 @@
                                 dụng</button>
                         </div>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-lg font-medium text-gray-700">Tổng tiền:</span>
-                        <span id="total-price" class="text-2xl font-bold text-primary">{{ number_format($items->sum(function ($item) {
-        return ($item->variant ? $item->variant->price : $item->product->price) * $item->quantity; })) }}₫</span>
+                    @php
+                        $subtotal = $items->sum(function ($item) {
+                            return ($item->variant ? $item->variant->price : $item->product->price) * $item->quantity;
+                        });
+                    @endphp
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-medium text-gray-700">Tạm tính:</span>
+                            <span id="subtotal-price"
+                                class="text-lg font-semibold text-gray-900">{{ number_format($subtotal) }}₫</span>
+                        </div>
+                        <div class="flex justify-between items-center text-green-600">
+                            <span class="text-lg font-medium">Giảm giá:</span>
+                            <span id="discount-price" class="text-lg font-semibold">-0₫</span>
+                        </div>
+                        <div class="flex justify-between items-center border-t pt-2">
+                            <span class="text-lg font-medium text-gray-700">Tổng tiền:</span>
+                            <span id="total-price"
+                                class="text-2xl font-bold text-primary">{{ number_format($subtotal) }}₫</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <form action="#" method="POST">
+                <form id="checkout-form" action="{{ route('user.checkout.store') }}" method="POST">
                     @csrf
+                    <!-- Hidden input for selected items -->
+                    @foreach($items as $item)
+                        <input type="hidden" name="selected_items[]" value="{{ $item->id }}">
+                    @endforeach
+                    <!-- Hidden input for voucher code -->
+                    <input type="hidden" name="voucher_code" id="hidden_voucher_code" value="">
                     <div class="mb-4">
                         <label class="block text-gray-700 font-medium mb-2">Họ và tên</label>
                         <input type="text" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
@@ -121,14 +143,124 @@
     @push('scripts')
         <script>
             $(document).ready(function () {
+                function formatVnd(number) {
+                    try {
+                        return new Intl.NumberFormat('vi-VN').format(number) + '₫';
+                    } catch (e) {
+                        return number + '₫';
+                    }
+                }
+
+                function getSelectedItems() {
+                    return $('input[name="selected_items[]"]').map(function () { return $(this).val(); }).get();
+                }
+
+                function applyVoucherCode(voucherCode) {
+                    const selectedItems = getSelectedItems();
+                    if (!selectedItems.length) {
+                        toastr.error('Vui lòng chọn sản phẩm để thanh toán!');
+                        return;
+                    }
+
+                    $.ajax({
+                        url: '{{ route('user.checkout.voucher.validate') }}',
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            voucher_code: voucherCode,
+                            selected_items: selectedItems,
+                        },
+                        success: function (res) {
+                            const subtotal = res.subtotal ?? 0;
+                            const discount = res.discount ?? 0;
+                            const total = res.total ?? subtotal;
+
+                            $('#subtotal-price').text(formatVnd(subtotal));
+                            $('#discount-price').text('-' + formatVnd(discount));
+                            $('#total-price').text(formatVnd(total));
+
+                            if (res.ok && voucherCode) {
+                                $('#hidden_voucher_code').val(voucherCode);
+                                toastr.success(res.message || ('Đã áp dụng mã giảm giá: ' + voucherCode));
+                            } else {
+                                $('#hidden_voucher_code').val('');
+                                if (voucherCode) {
+                                    toastr.error(res.message || 'Không áp dụng được mã giảm giá.');
+                                }
+                            }
+                        },
+                        error: function () {
+                            toastr.error('Không thể kiểm tra mã giảm giá. Vui lòng thử lại.');
+                        }
+                    });
+                }
+
                 // Ensure payment method selection works
                 $('.payment-method-card').click(function () {
                     let method = $(this).data('method');
                     $('input[name="payment_method"]').prop('checked', false);
                     $('#' + method).prop('checked', true).trigger('change');
                 });
+
+                // Handle voucher application
+                $('#apply_voucher').click(function () {
+                    const voucherCode = $('#voucher_code').val().trim();
+                    if (!voucherCode) {
+                        toastr.error('Vui lòng nhập mã giảm giá!');
+                        return;
+                    }
+
+                    applyVoucherCode(voucherCode);
+                });
+
+                // Allow pressing Enter in voucher input
+                $('#voucher_code').keypress(function (e) {
+                    if (e.which === 13) {
+                        e.preventDefault();
+                        $('#apply_voucher').click();
+                    }
+                });
+
+                // Form validation before submit
+                $('#checkout-form').submit(function (e) {
+                    const name = $('input[name="name"]').val().trim();
+                    const phone = $('input[name="phone"]').val().trim();
+                    const address = $('textarea[name="address"]').val().trim();
+                    const paymentMethod = $('input[name="payment_method"]:checked').val();
+
+                    if (!name) {
+                        e.preventDefault();
+                        toastr.error('Vui lòng nhập họ và tên!');
+                        $('input[name="name"]').focus();
+                        return false;
+                    }
+
+                    if (!phone) {
+                        e.preventDefault();
+                        toastr.error('Vui lòng nhập số điện thoại!');
+                        $('input[name="phone"]').focus();
+                        return false;
+                    }
+
+                    if (!address) {
+                        e.preventDefault();
+                        toastr.error('Vui lòng nhập địa chỉ!');
+                        $('textarea[name="address"]').focus();
+                        return false;
+                    }
+
+                    if (!paymentMethod) {
+                        e.preventDefault();
+                        toastr.error('Vui lòng chọn phương thức thanh toán!');
+                        return false;
+                    }
+
+                    // Show loading state
+                    const submitBtn = $(this).find('button[type="submit"]');
+                    submitBtn.prop('disabled', true).text('Đang xử lý...');
+                });
             });
         </script>
-       
+
     @endpush
 @endsection

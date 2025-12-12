@@ -54,7 +54,16 @@ Route::prefix('user')->group(function () {
     Route::post('cart/update', [\App\Http\Controllers\User\CartController::class, 'update'])->middleware('auth')->name('user.cart.update');
     Route::post('cart/update', [\App\Http\Controllers\User\CartController::class, 'update'])->middleware('auth')->name('user.cart.update');
     Route::delete('cart/{detail}', [\App\Http\Controllers\User\CartController::class, 'destroy'])->middleware('auth')->name('user.cart.destroy');
-    Route::post('checkout', [\App\Http\Controllers\User\CartController::class, 'checkout'])->middleware('auth')->name('user.cart.checkout');
+    Route::get('checkout', [\App\Http\Controllers\User\CheckoutController::class, 'show'])->middleware('auth')->name('user.checkout.show');
+    Route::post('checkout', [\App\Http\Controllers\User\CheckoutController::class, 'store'])->middleware('auth')->name('user.checkout.store');
+    Route::post('checkout/voucher/validate', [\App\Http\Controllers\User\CheckoutController::class, 'validateVoucher'])->middleware('auth')->name('user.checkout.voucher.validate');
+    Route::get('checkout/success/{order}', [\App\Http\Controllers\User\CheckoutController::class, 'success'])->middleware('auth')->name('user.checkout.success');
+    Route::get('checkout/status/{order}', [\App\Http\Controllers\User\CheckoutController::class, 'status'])->middleware('auth')->name('user.checkout.status');
+    Route::get('checkout/payos/return/{order}', [\App\Http\Controllers\User\CheckoutController::class, 'payosReturn'])->middleware('auth')->name('user.payos.return');
+    Route::get('checkout/payos/cancel/{order}', [\App\Http\Controllers\User\CheckoutController::class, 'payosCancel'])->middleware('auth')->name('user.payos.cancel');
+    Route::post('checkout/payos/webhook', [\App\Http\Controllers\User\CheckoutController::class, 'payosWebhook'])->name('user.payos.webhook');
+    Route::get('orders/{order}', [\App\Http\Controllers\User\OrderController::class, 'show'])->middleware('auth')->name('user.orders.show');
+
     Route::get('products/discounts', [\App\Http\Controllers\User\HomeController::class, 'discounts'])->name('user.products.discounts');
     Route::get('products/new-arrivals', [\App\Http\Controllers\User\HomeController::class, 'newArrivals'])->name('user.products.new');
     Route::post('products/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->middleware('auth')->name('user.reviews.store');
