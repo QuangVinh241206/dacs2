@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Voucher;
+
 use App\Services\PayOSService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -226,6 +227,10 @@ class CheckoutController extends Controller
                         'price' => $price,
                         'quantity' => (int) $item->quantity,
                     ]);
+                    if ($item->variant) {
+                        $item->variant->decrementStock((int) $item->quantity);
+                    }
+                    
                 }
 
                 $cartDetailIds = $items->pluck('id')->all();

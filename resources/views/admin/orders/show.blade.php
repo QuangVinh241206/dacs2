@@ -80,7 +80,8 @@
                                                 @elseif($order->order_status === 'processing') Đang xử lý
                                                 @elseif($order->order_status === 'shipping') Đang giao
                                                 @elseif($order->order_status === 'completed') Hoàn thành
-                                                @else Đã hủy
+                                                @elseif($order->order_status === 'cancelled') Đã hủy
+                                                @elseif($order->order_status === 'pending_payment') chờ thanh toán
                                                 @endif
                                             </span>
                                         </p>

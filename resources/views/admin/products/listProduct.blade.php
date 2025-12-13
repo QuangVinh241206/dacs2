@@ -72,9 +72,9 @@
                                 @foreach($products as $p)
                                     <tr>
                                         <td>{{ $p->id }}</td>
-                                        <td><a href="{{ route('admin.products.show', $p->id) }}">{{ $p->name }}</a></td>
                                         <td><img src="{{ asset('storage/' . ($p->images->where('is_main', true)->first()->image_url ?? '')) }}"
                                                 alt="{{ $p->name }}" style="max-width: 100px;"></td>
+                                        <td><a href="{{ route('admin.products.show', $p->id) }}">{{ $p->name }}</a></td>
                                         <td>{{ optional($p->category)->name }}</td>
                                         <td>{{ $p->variants->count() }}</td>
                                         <td>
