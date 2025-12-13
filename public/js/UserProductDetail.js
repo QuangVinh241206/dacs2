@@ -7,6 +7,12 @@
     var priceEl = document.getElementById("price-display");
     var origEl = document.getElementById("original-price");
     var addBtn = document.getElementById("addToCart");
+    var buyBtn = document.getElementById("buyNow");
+    // Quantity controls (declared early because updatePriceAndVariant may run on init)
+    var increaseBtn = document.getElementById("increase-quantity");
+    var decreaseBtn = document.getElementById("decrease-quantity");
+    var quantityInput = document.getElementById("quantity-input");
+    var timer;
     var colorContainer = document.getElementById("color-buttons-container");
     var sizeButtons = document.querySelectorAll(".size-button");
 
@@ -34,15 +40,55 @@
         return null;
     } // 2. Cập nhật Giá và Variant ID
 
+    function normalizeStock(raw) {
+        if (raw === null || typeof raw === "undefined") return null;
+        var n = Number(raw);
+        return Number.isFinite(n) ? n : null;
+    }
+
+    function setQuantityControlsEnabled(enabled, stock) {
+        if (!quantityInput || !increaseBtn || !decreaseBtn) return;
+
+        quantityInput.disabled = !enabled;
+        increaseBtn.disabled = !enabled;
+        decreaseBtn.disabled = !enabled;
+
+        if (!enabled) {
+            quantityInput.value = 1;
+            quantityInput.setAttribute("max", "1");
+            return;
+        }
+
+        var max = typeof stock === "number" && stock > 0 ? String(stock) : "1";
+        quantityInput.setAttribute("max", max);
+
+        var current = parseInt(quantityInput.value || "1", 10);
+        if (!current || current < 1) current = 1;
+        if (typeof stock === "number" && stock > 0 && current > stock) current = stock;
+        quantityInput.value = current;
+    }
+
     function updatePriceAndVariant(v) {
-        if (!v || (v.stock && v.stock <= 0)) {
+        var stock = v ? normalizeStock(v.stock) : null;
+        var isOutOfStock = !v || (typeof stock === "number" && stock <= 0);
+        if (isOutOfStock) {
             priceEl.textContent = "Hết hàng";
             origEl.textContent = "";
             origEl.classList.add("hidden");
-            addBtn.setAttribute("data-variant-id", "");
-            addBtn.disabled = true;
-            addBtn.innerHTML =
-                '<i class="ri-shopping-cart-2-line mr-2"></i> Hết hàng';
+            if (addBtn) {
+                addBtn.setAttribute("data-variant-id", "");
+                addBtn.disabled = true;
+                addBtn.innerHTML =
+                    '<i class="ri-shopping-cart-2-line mr-2"></i> Hết hàng';
+            }
+
+            if (buyBtn) {
+                buyBtn.setAttribute("data-variant-id", "");
+                buyBtn.disabled = true;
+                buyBtn.innerHTML =
+                    'Hết hàng';
+            }
+            setQuantityControlsEnabled(false);
             return;
         }
 
@@ -58,10 +104,21 @@
             origEl.classList.add("hidden");
         }
 
-        if (addBtn) addBtn.setAttribute("data-variant-id", v.id);
-        addBtn.disabled = false;
-        addBtn.innerHTML =
-            '<i class="ri-shopping-cart-2-line mr-2"></i> Thêm vào giỏ hàng';
+        if (addBtn) {
+            addBtn.setAttribute("data-variant-id", v.id);
+            addBtn.disabled = false;
+            addBtn.innerHTML =
+                '<i class="ri-shopping-cart-2-line mr-2"></i> Thêm vào giỏ';
+        }
+
+        if (buyBtn) {
+            buyBtn.setAttribute("data-variant-id", v.id);
+            buyBtn.disabled = false;
+            buyBtn.innerHTML =
+                'Mua ngay';
+        }
+
+        setQuantityControlsEnabled(true, stock);
     } // 3. Xử lý khi chọn Kích thước
 
     function handleSizeSelect(sizeButton) {
@@ -342,14 +399,14 @@
         });
     })();
     // Số lượng
-    const increaseBtn = document.getElementById("increase-quantity");
-    const decreaseBtn = document.getElementById("decrease-quantity");
-    const quantityInput = document.getElementById("quantity-input");
-    let timer; // dùng để chạy liên tục
-    quantityInput.addEventListener("input", function () {
+    if (quantityInput) quantityInput.addEventListener("input", function () {
         let val = parseInt(quantityInput.value);
         let variantID = parseInt(addBtn.getAttribute("data-variant-id"));
-        let stock = variants.find((v) => v.id == variantID)?.stock || 0;
+        let stock = normalizeStock(variants.find((v) => v.id == variantID)?.stock) || 0;
+        if (stock <= 0) {
+            quantityInput.value = 1;
+            return;
+        }
         if (isNaN(val) || val < 1) {
             quantityInput.value = 1;
         }
@@ -360,13 +417,16 @@
     // Hàm tăng
     function increase() {
         let variantID = parseInt(addBtn.getAttribute("data-variant-id"));
-        let stock = variants.find((v) => v.id == variantID)?.stock || 0;
+        let stock = normalizeStock(variants.find((v) => v.id == variantID)?.stock) || 0;
+        if (stock <= 0) {
+            toastr.error("Hết hàng.");
+            return;
+        }
         if (stock >= parseInt(quantityInput.value) + 1) {
             let current = parseInt(quantityInput.value) || 1;
             quantityInput.value = current + 1;
-        }
-        else {
-            toastr.error('Chỉ còn ' + stock + ' sản phẩm trong kho.');
+        } else {
+            toastr.error("Chỉ còn " + stock + " sản phẩm trong kho.");
         }
     }
 
@@ -389,14 +449,18 @@
 
     // Dừng lại khi nhả chuột hoặc rời nút
     function stopHold() {
-        clearInterval(timer);
+        clearTimeout(timer);
     }
-    increaseBtn.addEventListener("mousedown", () => startHold(increase));
-    increaseBtn.addEventListener("mouseup", stopHold);
-    increaseBtn.addEventListener("mouseleave", stopHold);
-    decreaseBtn.addEventListener("mousedown", () => startHold(decrease));
-    decreaseBtn.addEventListener("mouseup", stopHold);
-    decreaseBtn.addEventListener("mouseleave", stopHold);
+    if (increaseBtn) {
+        increaseBtn.addEventListener("mousedown", () => startHold(increase));
+        increaseBtn.addEventListener("mouseup", stopHold);
+        increaseBtn.addEventListener("mouseleave", stopHold);
+    }
+    if (decreaseBtn) {
+        decreaseBtn.addEventListener("mousedown", () => startHold(decrease));
+        decreaseBtn.addEventListener("mouseup", stopHold);
+        decreaseBtn.addEventListener("mouseleave", stopHold);
+    }
 
     // Favorite (Like) button AJAX handler
     (function () {

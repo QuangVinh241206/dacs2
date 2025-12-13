@@ -144,6 +144,28 @@
                     });
                 }
 
+                // Preselect item when coming from "Buy Now"
+                (function preselectFromQuery() {
+                    try {
+                        var params = new URLSearchParams(window.location.search);
+                        var selectId = params.get('select');
+                        if (!selectId) return;
+
+                        $('.item-checkbox').prop('checked', false);
+                        var $item = $(`.cart-item[data-detail-id="${selectId}"]`);
+                        if ($item.length) {
+                            $item.find('.item-checkbox').prop('checked', true);
+                            $('#select-all').prop('checked', false);
+                            updateTotal();
+                            if ($item[0] && $item[0].scrollIntoView) {
+                                $item[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }
+                    } catch (e) {
+                        // ignore
+                    }
+                })();
+
                 // Select all
                 $('#select-all').change(function () {
                     $('.item-checkbox').prop('checked', $(this).is(':checked'));
@@ -271,9 +293,7 @@
                     $('#checkout-btn').prop('disabled', true).text('Đang xử lý...');
                 });
 
-                // Initial total - select all items by default
-                $('#select-all').prop('checked', true).trigger('change');
-                updateTotal();
+
             });
         </script>
     @endpush

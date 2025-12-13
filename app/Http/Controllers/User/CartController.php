@@ -20,6 +20,8 @@ class CartController extends Controller
             $data = $request->validate([
                 'variant_id' => 'required',
                 'quantity' => 'required|integer|min:1',
+                'product_id' => 'nullable|integer',
+                'buy_now' => 'sometimes|boolean',
             ]);
         } catch (ValidationException $e) {
             Log::warning('Cart add validation failed', ['errors' => $e->errors()]);
@@ -47,20 +49,32 @@ class CartController extends Controller
                 $detail->quantity += $qty;
                 $detail->save();
                 $detailVariant = $detail->variant_id;
+                $detailId = $detail->id;
             } else {
                 $new = CartDetail::create([
                     'cart_id' => $cartModel->id,
-                    'product_id' => $request->input('product_id') ?? null,
+                    'product_id' => $data['product_id'] ?? null,
                     'variant_id' => $variantId,
                     'quantity' => $qty,
                 ]);
                 Log::info('Created new cart detail', ['cart_detail_id' => $new->id, 'variant' => $new->variant_id]);
                 $detailVariant = $new->variant_id;
+                $detailId = $new->id;
             }
 
             $count = (int) $cartModel->items()->sum('quantity');
 
             Log::info('Cart DB updated', ['user_id' => $user->id, 'cart_id' => $cartModel->id, 'count' => $count]);
+
+            if ($request->boolean('buy_now')) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Đã thêm vào giỏ hàng',
+                    'count' => $count,
+                    'detail_variant' => $detailVariant,
+                    'redirect_url' => route('user.cart.index', ['select' => $detailId]),
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
@@ -69,6 +83,11 @@ class CartController extends Controller
                 'detail_variant' => $detailVariant,
             ]);
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Vui lòng đăng nhập để thêm vào giỏ hàng.',
+        ], 401);
 
     }
 

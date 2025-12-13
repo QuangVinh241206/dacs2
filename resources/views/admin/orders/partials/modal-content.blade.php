@@ -29,13 +29,17 @@
                 @elseif($order->order_status === 'processing') bg-info
                 @elseif($order->order_status === 'shipping') bg-primary
                 @elseif($order->order_status === 'completed') bg-success
+                @elseif($order->order_status === 'paid') bg-success
+                @elseif($order->order_status === 'pending_payment') bg-secondary
                 @else bg-danger
                 @endif">
                 @if($order->order_status === 'pending') Chờ xác nhận
                 @elseif($order->order_status === 'processing') Đang xử lý
                 @elseif($order->order_status === 'shipping') Đang giao
                 @elseif($order->order_status === 'completed') Hoàn thành
-                @else Đã hủy
+                @elseif($order->order_status === 'cancelled') Đã hủy
+                @elseif($order->order_status === 'pending_payment') Chờ thanh toán
+                @elseif($order->order_status === 'paid') Đã thanh toán
                 @endif
             </span>
         </p>

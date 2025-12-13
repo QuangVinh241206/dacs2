@@ -74,7 +74,7 @@
                             @endfor
                         </div>
                         <span id="review-count" class="text-sm text-gray-500 ml-2">({{ isset($reviewCount) ? $reviewCount : ($product->reviews->count() ?? 0) }} đánh giá)</span>
-                        <span class="ml-4 px-2 py-1 bg-primary text-white text-xs rounded">{{ $product->status == 1 ? 'Còn hàng' : 'Ngừng bán' }}</span>
+                        
                     </div>
                     <div class="flex items-center mb-6">
                         <div>
@@ -125,11 +125,17 @@
                             <input type="number" value="1" min="1" class="w-12 text-center border-none bg-transparent text-lg font-medium mx-2" id="quantity-input">
                             <button class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100" id="increase-quantity">+</button>
                         </div>
-                        <button id="addToCart" class="bg-primary text-white px-8 py-3 rounded-button font-medium hover:bg-blue-600 transition shadow-md whitespace-nowrap flex items-center"
+                        <button id="buyNow" class="bg-primary text-white px-8 py-3 rounded-button font-medium hover:bg-blue-600 transition shadow-md whitespace-nowrap flex items-center" 
                             data-variant-id="{{ $product->variants->first()->id ?? '' }}"
                             data-login-url="{{ route('login') }}?redirect={{ urlencode(request()->fullUrl()) }}">
-                            <i class="ri-shopping-cart-2-line mr-2"></i> Thêm vào giỏ hàng
+                            Mua ngay
                         </button>
+                        <button id="addToCart" class="bg-white border border-primary text-primary px-8 py-3 rounded-button font-medium hover:bg-primary hover:text-white transition shadow-md whitespace-nowrap flex items-center"
+                            data-variant-id="{{ $product->variants->first()->id ?? '' }}"
+                            data-login-url="{{ route('login') }}?redirect={{ urlencode(request()->fullUrl()) }}">
+                            <i class="ri-shopping-cart-2-line mr-2"></i> Thêm vào giỏ 
+                        </button>
+                        
                         <button id="favorite-button" data-product-id="{{ $product->id }}" data-fav-url="{{ route('user.favorites.toggle') }}" data-login-url="{{ route('login') }}" class="w-12 h-12 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
                             @if(isset($isFavorited) && $isFavorited)
                                 <i class="ri-heart-fill text-2xl text-red-500"></i>
@@ -196,27 +202,6 @@
                         <div id="reviews-list" class="space-y-6">
                             @include('user.partials.reviews_list', ['reviews' => $product->reviews])
                         </div>
-                        <div class="mt-6">
-                            <h4 class="text-lg font-medium text-gray-800 mb-2">Viết đánh giá</h4>
-                            <form id="review-form" method="POST" action="{{ route('user.reviews.store') }}">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->id ?? '' }}">
-                                <input type="hidden" name="rating" id="rating-input" value="5">
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Đánh giá của bạn</label>
-                                    <div class="flex text-gray-300 rating-input">
-                                        @for($i=1;$i<=5;$i++)
-                                            <button type="button" data-value="{{ $i }}" class="ri-star-line hover:text-yellow-400 cursor-pointer rating-star"></button>
-                                        @endfor
-                                    </div>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nhận xét</label>
-                                    <textarea name="comment" class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" rows="4" placeholder="Chia sẻ cảm nhận của bạn..."></textarea>
-                                </div>
-                                <button type="submit" class="bg-primary text-white px-6 py-2 rounded-button font-medium hover:bg-blue-600 transition">Gửi đánh giá</button>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -273,9 +258,7 @@
                 var variantId = $(this).attr('data-variant-id');
                 var qty = parseInt($('#quantity-input').val() || 1);
 
-                console.log('Add to cart clicked, variantId=', variantId, 'qty=', qty);
-
-                // If user not authenticated, redirect to login (do not use session cart)
+                // If user not authenticated, redirect to login
                 var loginUrl = $(this).data('login-url') || '{{ route('login') }}';
                 if (!window.isAuthenticated || window.isAuthenticated === 'false') {
                     window.location.href = loginUrl;
@@ -284,7 +267,6 @@
 
                 if(!variantId) {
                     toastr.error('Không xác định biến thể sản phẩm');
-                    console.error('Variant id missing on add-to-cart button');
                     return;
                 }
 
@@ -295,15 +277,8 @@
                     dataType: 'json',
                 })
                 .done(function(res){
-                    console.log('Add to cart response', res);
-                    if(res && res.detail_variant !== undefined){
-                        console.log('Server saved variant id:', res.detail_variant);
-                    }
                     if(res && res.success){
-                        // use global toastr defaults (position: top-right)
-                        // keep local overrides minimal (rely on global settings in master layout)
                         toastr.success(res.message || 'Đã thêm vào giỏ hàng');
-                        // update cart count in header
                         if(res.count !== undefined){
                             $('#cart-count').text(res.count);
                         }
@@ -311,15 +286,55 @@
                         toastr.error((res && res.message) || 'Không thể thêm vào giỏ hàng');
                     }
                 })
-                .fail(function(xhr, status, error){
-                    console.error('Add to cart failed', status, error, xhr.responseText);
+                .fail(function(xhr){
                     var msg = 'Lỗi khi thêm vào giỏ hàng';
                     if(xhr.status === 419){
                         msg = 'Token bảo mật hết hạn. Vui lòng tải lại trang và thử lại.';
                     } else if(xhr.responseJSON && xhr.responseJSON.errors){
-                        // collect validation errors
-                        var errors = xhr.responseJSON.errors;
-                        msg = Object.values(errors).flat().join('\n');
+                        msg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                    } else if(xhr.responseJSON && xhr.responseJSON.message){
+                        msg = xhr.responseJSON.message;
+                    }
+                    toastr.error(msg);
+                });
+            });
+
+            // buy now handler (add to cart + redirect to cart with item preselected)
+            $('#buyNow').on('click', function(e){
+                e.preventDefault();
+                var variantId = $(this).attr('data-variant-id');
+                var qty = parseInt($('#quantity-input').val() || 1);
+
+                var loginUrl = $(this).data('login-url') || '{{ route('login') }}';
+                if (!window.isAuthenticated || window.isAuthenticated === 'false') {
+                    window.location.href = loginUrl;
+                    return;
+                }
+
+                if(!variantId) {
+                    toastr.error('Không xác định biến thể sản phẩm');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route('user.cart.add') }}',
+                    method: 'POST',
+                    data: { variant_id: variantId, quantity: qty, product_id: '{{ $product->id }}', buy_now: 1 },
+                    dataType: 'json',
+                })
+                .done(function(res){
+                    if(res && res.success){
+                        window.location.href = (res.redirect_url || '{{ route('user.cart.index') }}');
+                    } else {
+                        toastr.error((res && res.message) || 'Không thể thêm vào giỏ hàng');
+                    }
+                })
+                .fail(function(xhr){
+                    var msg = 'Lỗi khi thêm vào giỏ hàng';
+                    if(xhr.status === 419){
+                        msg = 'Token bảo mật hết hạn. Vui lòng tải lại trang và thử lại.';
+                    } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                        msg = Object.values(xhr.responseJSON.errors).flat().join('\n');
                     } else if(xhr.responseJSON && xhr.responseJSON.message){
                         msg = xhr.responseJSON.message;
                     }

@@ -12,6 +12,14 @@
                             Trang chủ
                         </a>
                     </li>
+                    <li class="inline-flex items-center">
+                        <a href="{{ route('user.orders.index') }}"
+                           class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary transition-colors duration-200">
+                           <i class="ri-arrow-right-s-line text-gray-400 mx-1"></i> 
+                           <i class="ri-file-list-3-line mr-1"></i>
+                            Theo dõi đơn hàng
+                        </a>
+                    </li>
                     <li>
                         <div class="flex items-center">
                             <i class="ri-arrow-right-s-line text-gray-400 mx-1"></i>
@@ -28,7 +36,10 @@
                     <span class="px-3 py-1 rounded-full text-sm font-medium
                         @if($order->order_status === 'pending' || $order->order_status === 'pending_payment') bg-yellow-100 text-yellow-800
                         @elseif($order->order_status === 'paid') bg-green-100 text-green-800
-                        @elseif($order->order_status === 'payment_failed' || $order->order_status === 'payment_cancelled') bg-red-100 text-red-800
+                        @elseif($order->order_status === 'cancelled') bg-red-100 text-red-800
+                        @elseif($order->order_status === 'processing') bg-blue-100 text-blue-800
+                        @elseif($order->order_status === 'shipping') bg-blue-100 text-blue-800
+                        @elseif($order->order_status === 'completed') bg-green-100 text-green-800
                         @else bg-gray-100 text-gray-800 @endif">
                         @switch($order->order_status)
                             @case('pending')
@@ -40,11 +51,17 @@
                             @case('paid')
                                 Đã thanh toán
                                 @break
-                            @case('payment_failed')
-                                Thanh toán thất bại
+                            @case('completed')
+                                Hoàn thành
                                 @break
-                            @case('payment_cancelled')
-                                Đã hủy thanh toán
+                            @case('processing')
+                                Đang xử lý
+                                @break
+                            @case('shipping')
+                                Đang giao
+                                @break
+                            @case('cancelled')
+                                Đã hủy
                                 @break
                             @default
                                 {{ $order->order_status }}

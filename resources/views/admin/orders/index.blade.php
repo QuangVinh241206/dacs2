@@ -76,6 +76,10 @@
                                                         data-order-id="{{ $order->id }}" style="min-width: 140px;">
                                                         <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}
                                                             style="color: #856404; background-color: #fff3cd;">⏳ Chờ xác nhận</option>
+                                                        <option value="pending_payment" {{ $order->order_status === 'pending_payment' ? 'selected' : '' }}
+                                                            style="color: #856404; background-color: #fff3cd;">🕒 Chờ thanh toán</option>
+                                                        <option value="paid" {{ $order->order_status === 'paid' ? 'selected' : '' }}
+                                                            style="color: #155724; background-color: #d4edda;">💰 Đã thanh toán</option>
                                                         <option value="processing" {{ $order->order_status === 'processing' ? 'selected' : '' }}
                                                             style="color: #0c5460; background-color: #d1ecf1;">🔄 Đang xử lý</option>
                                                         <option value="shipping" {{ $order->order_status === 'shipping' ? 'selected' : '' }}
@@ -84,6 +88,8 @@
                                                             style="color: #155724; background-color: #d4edda;">✅ Hoàn thành</option>
                                                         <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}
                                                             style="color: #721c24; background-color: #f8d7da;">❌ Đã hủy</option>
+                                                        
+                                                        
                                                     </select>
                                                 
                                             </td>

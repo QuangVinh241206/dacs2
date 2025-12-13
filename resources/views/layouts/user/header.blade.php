@@ -44,9 +44,6 @@
                 <a href="{{ route('user.about') }}"
                     class="font-medium hover:text-primary transition {{ Request()->is('user/about') ? 'text-primary' : 'text-gray-800' }}">Về
                     chúng tôi</a>
-                <a href="{{ route('user.contact') }}"
-                    class="font-medium hover:text-primary transition {{ Request()->is('user/contact') ? 'text-primary' : 'text-gray-800' }}">Liên
-                    hệ</a>
             </nav>
 
             <!-- Search, Cart, Account -->
@@ -109,7 +106,7 @@
                             </li>
                             </li>
                             <li>
-                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 border-b">
+                                <a href="{{ route("user.orders.index") }}" class="block px-4 py-2 hover:bg-gray-100 border-b">
                                     <i class="ri-file-list-line ri-lg"></i>
                                     Theo dõi đơn hàng
                                 </a>

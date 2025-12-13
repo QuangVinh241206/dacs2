@@ -43,7 +43,9 @@ class OrderController extends Controller
             'processing' => 'Đang xử lý',
             'shipping' => 'Đang giao',
             'completed' => 'Hoàn thành',
-            'cancelled' => 'Đã hủy'
+            'cancelled' => 'Đã hủy',
+            'pending_payment' => 'Chờ thanh toán',
+            'paid' => 'Đã thanh toán'
         ];
 
         return view('admin.orders.index', compact('orders', 'statuses'));
@@ -78,7 +80,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,processing,shipping,completed,cancelled'
+            'status' => 'required|in:pending,processing,shipping,completed,cancelled,pending_payment,paid',
         ]);
 
         $order->update(['order_status' => $request->status]);
@@ -141,7 +143,9 @@ class OrderController extends Controller
             'processing' => 'Đang xử lý',
             'shipping' => 'Đang giao',
             'completed' => 'Hoàn thành',
-            'cancelled' => 'Đã hủy'
+            'cancelled' => 'Đã hủy',
+            'pending_payment' => 'Chờ thanh toán',
+            'paid' => 'Đã thanh toán'
         ];
 
         return view('admin.orders.trashed', compact('orders', 'statuses'));

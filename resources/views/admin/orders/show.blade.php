@@ -64,7 +64,7 @@
                                         <p><strong>Ngày đặt:</strong>
                                             {{ $order->order_date ? $order->order_date->format('d/m/Y H:i') : 'N/A' }}</p>
                                         <p><strong>Phương thức thanh toán:</strong>
-                                            {{ $order->payment_method === 'COD' ? 'Thanh toán khi nhận hàng' : ($order->payment_method === 'bank_transfer' ? 'Chuyển khoản' : 'Ví điện tử') }}
+                                            {{ $order->payment_method === 'COD' ? 'Thanh toán khi nhận hàng' : ($order->payment_method === 'qr' ? 'Chuyển khoản QR' : 'không xác định') }}
                                         </p>
                                     </div>
                                     <div class="col-md-6">
@@ -74,14 +74,17 @@
                                                                                                     @elseif($order->order_status === 'processing') bg-info
                                                                                                     @elseif($order->order_status === 'shipping') bg-primary
                                                                                                     @elseif($order->order_status === 'completed') bg-success
-                                                                                                    @else bg-danger
+                                                                                                    @elseif($order->order_status === 'pending_payment') bg-secondary
+                                                                                                    @elseif($order->order_status === 'cancelled') bg-danger
+                                                                                                    @elseif($order->order_status === 'paid') bg-success
                                                                                                     @endif">
                                                 @if($order->order_status === 'pending') Chờ xác nhận
+                                                @elseif($order->order_status === 'pending_payment') Chờ thanh toán
+                                                @elseif($order->order_status === 'paid') Đã thanh toán
                                                 @elseif($order->order_status === 'processing') Đang xử lý
                                                 @elseif($order->order_status === 'shipping') Đang giao
                                                 @elseif($order->order_status === 'completed') Hoàn thành
-                                                @elseif($order->order_status === 'cancelled') Đã hủy
-                                                @elseif($order->order_status === 'pending_payment') chờ thanh toán
+                                                @elseif($order->order_status === 'cancelled') Đã hủy                                       
                                                 @endif
                                             </span>
                                         </p>
@@ -112,14 +115,18 @@
                                                 'processing' => 'info',
                                                 'shipping' => 'primary',
                                                 'completed' => 'success',
-                                                'cancelled' => 'danger'
+                                                'cancelled' => 'danger',
+                                                'pending_payment' => 'secondary',
+                                                'paid' => 'success'
                                             ];
                                             $statusLabels = [
                                                 'pending' => 'Chờ xác nhận',
                                                 'processing' => 'Đang xử lý',
                                                 'shipping' => 'Đang giao',
                                                 'completed' => 'Hoàn thành',
-                                                'cancelled' => 'Đã hủy'
+                                                'cancelled' => 'Đã hủy',
+                                                'pending_payment' => 'Chờ thanh toán',
+                                                'paid' => 'Đã thanh toán'
                                             ];
                                         @endphp
                                         <span class="badge bg-{{ $statusColors[$order->order_status] ?? 'secondary' }} fs-6">
@@ -144,6 +151,10 @@
                                                 style="color: #155724; background-color: #d4edda;">✅ Hoàn thành</option>
                                             <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}
                                                 style="color: #721c24; background-color: #f8d7da;">❌ Đã hủy</option>
+                                            <option value="pending_payment" {{ $order->order_status === 'pending_payment' ? 'selected' : '' }}
+                                                style="color: #383d41; background-color: #e2e3e5;">💳 Chờ thanh toán</option>
+                                            <option value="paid" {{ $order->order_status === 'paid' ? 'selected' : '' }}
+                                                style="color: #155724; background-color: #d4edda;">💰 Đã thanh toán</option>
                                         </select>
                                     </div>
                                     <button type="submit" class="btn btn-primary w-100">
@@ -244,7 +255,7 @@
         receiverPhone: '{{ $order->receiver_phone }}',
         shippingAddress: '{{ $order->shipping_address }}',
         paymentMethod: '{{ $order->payment_method === 'COD' ? 'Thanh toán khi nhận hàng' : ($order->payment_method === 'bank_transfer' ? 'Chuyển khoản' : 'Ví điện tử') }}',
-        status: '{{ $order->order_status === 'pending' ? 'Chờ xác nhận' : ($order->order_status === 'processing' ? 'Đang xử lý' : ($order->order_status === 'shipping' ? 'Đang giao' : ($order->order_status === 'completed' ? 'Hoàn thành' : 'Đã hủy'))) }}',
+        status: '{{ $order->order_status === 'pending' ? 'Chờ xác nhận' : ($order->order_status === 'processing' ? 'Đang xử lý' : ($order->order_status === 'shipping' ? 'Đang giao' : ($order->order_status === 'completed' ? 'Hoàn thành' : ($order->order_status === 'pending_payment' ? 'Chờ thanh toán' : ($order->order_status === 'paid' ? 'Đã thanh toán' : 'Đã hủy'))))) }}',
         voucher: '{{ $order->voucher ? $order->voucher->code . ' (' . ($order->voucher->discount_type === 'percent' ? $order->voucher->discount_value . '%' : number_format($order->voucher->discount_value) . 'đ') . ')' : '' }}',
         totalPrice: '{{ number_format($order->total_price) }}',
         details: [
@@ -299,7 +310,7 @@
                         const badge = $('.badge');
                         const newStatus = response.status;
 
-                        badge.removeClass('bg-warning bg-info bg-primary bg-success bg-danger');
+                        badge.removeClass('bg-warning bg-info bg-primary bg-success bg-danger bg-secondary');
 
                         switch (newStatus) {
                             case 'pending':
@@ -317,6 +328,14 @@
                             case 'cancelled':
                                 badge.addClass('bg-danger').text('Đã hủy');
                                 break;
+                            case 'pending_payment':
+                                badge.addClass('bg-secondary').text('Chờ thanh toán');
+                                break;
+                            case 'paid':
+                                badge.addClass('bg-success').text('Đã thanh toán');
+                                break;
+                            default:
+                                badge.addClass('bg-secondary').text(newStatus);
                         }
 
                         // Show success message with Toastr

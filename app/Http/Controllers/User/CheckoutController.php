@@ -230,7 +230,7 @@ class CheckoutController extends Controller
                     if ($item->variant) {
                         $item->variant->decrementStock((int) $item->quantity);
                     }
-                    
+
                 }
 
                 $cartDetailIds = $items->pluck('id')->all();
@@ -332,8 +332,10 @@ class CheckoutController extends Controller
     public function payosCancel(Request $request, $order)
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($order);
-        if ($order->order_status === 'pending_payment') {
-            $order->update(['order_status' => 'payment_cancelled']);
+        $isQr = $order->payment_method === 'qr';
+        $isUnpaid = !in_array($order->order_status, ['paid', 'completed'], true);
+        if ($isQr && $isUnpaid) {
+            $order->update(['order_status' => 'cancelled']);
         }
         return redirect()->route('user.checkout.success', ['order' => $order->id])
             ->with('error', 'Bạn đã hủy thanh toán QR.');

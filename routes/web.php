@@ -62,6 +62,9 @@ Route::prefix('user')->group(function () {
     Route::get('checkout/payos/return/{order}', [\App\Http\Controllers\User\CheckoutController::class, 'payosReturn'])->middleware('auth')->name('user.payos.return');
     Route::get('checkout/payos/cancel/{order}', [\App\Http\Controllers\User\CheckoutController::class, 'payosCancel'])->middleware('auth')->name('user.payos.cancel');
     Route::post('checkout/payos/webhook', [\App\Http\Controllers\User\CheckoutController::class, 'payosWebhook'])->name('user.payos.webhook');
+    Route::get('orders', [\App\Http\Controllers\User\OrderController::class, 'index'])->middleware('auth')->name('user.orders.index');
+    Route::post('orders/{order}/cancel', [\App\Http\Controllers\User\OrderController::class, 'cancel'])->middleware('auth')->name('user.orders.cancel');
+    Route::get('orders/{order}/review', [\App\Http\Controllers\User\OrderController::class, 'review'])->middleware('auth')->name('user.orders.review');
     Route::get('orders/{order}', [\App\Http\Controllers\User\OrderController::class, 'show'])->middleware('auth')->name('user.orders.show');
 
     Route::get('products/discounts', [\App\Http\Controllers\User\HomeController::class, 'discounts'])->name('user.products.discounts');
@@ -72,7 +75,12 @@ Route::prefix('user')->group(function () {
 // Admin product management
 Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/', function () {
-        return view('admin.dashboard');
+        $productCount = \App\Models\Product::where('status', 1)->count();
+        $categoryCount = \App\Models\Category::count();
+        $orderCount = \App\Models\Order::count();
+        $userCount = \App\Models\User::where('role', 'user')->count();
+
+        return view('admin.dashboard', compact('productCount', 'categoryCount', 'orderCount', 'userCount'));
     })->name('admin.dashboard');
     Route::get('products', [\App\Http\Controllers\Admin\ProductController::class, 'index'])->name('admin.products.index');
     Route::get('products/create', [\App\Http\Controllers\Admin\ProductController::class, 'create'])->name('admin.products.create');
