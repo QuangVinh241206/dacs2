@@ -83,7 +83,7 @@ class ProductController extends Controller
     {
         $rules = [
             'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255',
+            'slug' => 'required|string|max:255',
             'discount_percent' => 'nullable|numeric|min:0|max:100',
             'weight_capacity' => 'nullable|string|max:255',
             'material' => 'nullable|string|max:255',
@@ -126,6 +126,15 @@ class ProductController extends Controller
         } else {
             // normalize provided slug
             $data['slug'] = Str::slug($data['slug']);
+        }
+        if (Product::where('slug', $data['slug'])->exists()) {
+            $base = $data['slug'];
+            $slug = $base;
+            $i = 1;
+            while (Product::where('slug', $slug)->exists()) {
+                $slug = $base . '-' . $i++;
+            }
+            $data['slug'] = $slug;
         }
 
         $product = Product::create($data);

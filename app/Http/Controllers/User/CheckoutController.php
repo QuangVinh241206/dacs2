@@ -209,10 +209,18 @@ class CheckoutController extends Controller
 
                     $price = (int) ($item->variant ? $item->variant->price : $item->product->price);
 
+                    $variantId = $item->variant_id;
+                    if (!$variantId) {
+                        $variantId = $item->product?->variants()?->value('id');
+                    }
+                    if (!$variantId) {
+                        throw new \RuntimeException('Sản phẩm chưa có biến thể để tạo đơn hàng.');
+                    }
+
                     OrderDetail::create([
                         'order_id' => $order->id,
                         'product_id' => $item->product_id,
-                        'variant_id' => $item->variant_id,
+                        'variant_id' => $variantId,
                         'product_name' => $item->product->name,
                         'variant_name' => $variantName,
                         'price' => $price,
@@ -251,10 +259,16 @@ class CheckoutController extends Controller
                 buyerName: $order->receiver_name
             );
 
+            $checkoutUrl = $payment['checkoutUrl'] ?? null;
+            if (is_string($checkoutUrl) && $checkoutUrl !== '') {
+                return redirect()->away($checkoutUrl);
+            }
+
+            // Fallback (if PayOS doesn't return checkoutUrl for some reason)
             return view('user.checkout.payos', [
                 'order' => $order,
                 'qrCode' => $payment['qrCode'] ?? null,
-                'checkoutUrl' => $payment['checkoutUrl'] ?? null,
+                'checkoutUrl' => null,
             ]);
         } catch (\Throwable $e) {
             Log::error('PayOS create payment request failed', [
@@ -283,9 +297,25 @@ class CheckoutController extends Controller
         ]);
     }
 
-    public function payosReturn(Request $request, $order)
+    public function payosReturn(Request $request, PayOSService $payos, $order)
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($order);
+
+        if ($order->order_status !== 'paid') {
+            // If webhook isn't configured or arrives late, confirm directly with PayOS here.
+            try {
+                $info = $payos->getPaymentRequest((int) $order->id);
+                if ($payos->isPaidResponse($info)) {
+                    $order->update(['order_status' => 'paid']);
+                }
+            } catch (\Throwable $e) {
+                Log::warning('PayOS return check failed', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
         if ($order->order_status === 'paid') {
             return redirect()->route('user.checkout.success', ['order' => $order->id]);
         }
@@ -322,21 +352,47 @@ class CheckoutController extends Controller
         }
 
         $data = $request->input('data', []);
-        $orderCode = $data['orderCode'] ?? $request->input('orderCode');
-        $status = $data['status'] ?? $request->input('status');
+        $orderCode = $data['orderCode']
+            ?? $data['order_code']
+            ?? $request->input('orderCode')
+            ?? $request->input('order_code');
 
-        if (!$orderCode) {
+        $status = $data['status']
+            ?? $data['paymentStatus']
+            ?? $data['transactionStatus']
+            ?? $request->input('status')
+            ?? $request->input('paymentStatus')
+            ?? $request->input('transactionStatus');
+
+        $code = $data['code'] ?? $request->input('code');
+
+        Log::info('PayOS webhook received', [
+            'orderCode' => $orderCode,
+            'status' => $status,
+            'code' => $code,
+        ]);
+
+        $orderCodeInt = (int) $orderCode;
+        if ($orderCodeInt <= 0) {
             return response()->json(['ok' => false], 400);
         }
 
-        $order = Order::find($orderCode);
+        $order = Order::find($orderCodeInt);
         if (!$order) {
             return response()->json(['ok' => false], 404);
         }
 
         // Normalize status
-        $normalized = is_string($status) ? strtolower($status) : null;
-        if (in_array($normalized, ['paid', 'success', 'succeeded'], true)) {
+        $normalized = is_string($status) ? strtolower(trim($status)) : null;
+        $isPaid = in_array($normalized, ['paid', 'success', 'succeeded', '00', '2', 'completed'], true);
+        if (is_string($code) && trim($code) === '00') {
+            $isPaid = true;
+        }
+        if (is_bool($status) && $status === true) {
+            $isPaid = true;
+        }
+
+        if ($isPaid) {
             $order->update(['order_status' => 'paid']);
         }
 

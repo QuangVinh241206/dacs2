@@ -73,4 +73,62 @@ class PayOSService
             'raw' => $json,
         ];
     }
+
+    public function getPaymentRequest(int $orderCode): array
+    {
+        $baseUrl = rtrim((string) config('payos.base_url'), '/');
+        $clientId = (string) config('payos.client_id');
+        $apiKey = (string) config('payos.api_key');
+        $checksumKey = (string) config('payos.checksum_key');
+
+        if ($baseUrl === '' || $clientId === '' || $apiKey === '' || $checksumKey === '') {
+            throw new \RuntimeException('PayOS config is missing. Please set PAYOS_CLIENT_ID, PAYOS_API_KEY, PAYOS_CHECKSUM_KEY.');
+        }
+
+        // PayOS docs differ by version; this endpoint is best-effort.
+        $response = Http::withHeaders([
+            'x-client-id' => $clientId,
+            'x-api-key' => $apiKey,
+            'Accept' => 'application/json',
+        ])->get($baseUrl . '/v2/payment-requests/' . $orderCode);
+
+        if (!$response->successful()) {
+            Log::warning('PayOS get payment request failed', [
+                'orderCode' => $orderCode,
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+            throw new \RuntimeException('PayOS API error: ' . $response->status());
+        }
+
+        return (array) $response->json();
+    }
+
+    public function isPaidResponse(array $json): bool
+    {
+        $data = $json['data'] ?? [];
+
+        $status = $data['status']
+            ?? $data['paymentStatus']
+            ?? $data['transactionStatus']
+            ?? $json['status']
+            ?? null;
+
+        $code = $data['code'] ?? $json['code'] ?? null;
+
+        if (is_string($code) && trim($code) === '00') {
+            return true;
+        }
+
+        if (is_string($status)) {
+            $normalized = strtolower(trim($status));
+            return in_array($normalized, ['paid', 'success', 'succeeded', 'completed'], true);
+        }
+
+        if (is_bool($status)) {
+            return $status;
+        }
+
+        return false;
+    }
 }

@@ -110,7 +110,7 @@
                                         <td>{{ $v->id }}</td>
                                         <td>{{ $v->size }}</td>
                                         <td>{{ $v->color }}</td>
-                                        <td>{{ number_format($v->price, 0, ',', '.') }}</td>
+                                        <td>{{ number_format($v->price, 0, ',', '.') }}đ</td>
                                         <td>{{ $v->stock }}</td>
                                         <td>{{ $v->sku }}</td>
                                         <td>

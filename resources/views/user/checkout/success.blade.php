@@ -24,7 +24,7 @@
                             @endif
                         </span>
                     </div>
-                    <div>Trạng thái: <span class="font-semibold">{{ $order->order_status }}</span></div>
+                    <div>Trạng thái: <span id="order-status" class="font-semibold">{{ $order->order_status }}</span></div>
                 </div>
 
                 <div class="mt-6 flex gap-3">
@@ -40,4 +40,33 @@
             </div>
         </div>
     </section>
+
+    @push('scripts')
+        <script>
+            (function () {
+                const paymentMethod = @json($order->payment_method);
+                const currentStatus = @json($order->order_status);
+                if (paymentMethod !== 'qr' || currentStatus === 'paid') return;
+
+                function pollStatus() {
+                    fetch('{{ route('user.checkout.status', ['order' => $order->id]) }}', {
+                        headers: { 'Accept': 'application/json' },
+                        credentials: 'same-origin'
+                    })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (!data || !data.order_status) return;
+                            document.getElementById('order-status').textContent = data.order_status;
+                            if (data.order_status === 'paid') {
+                                // Refresh to clear "đang chờ" messages and show final status.
+                                window.location.href = '{{ route('user.checkout.success', ['order' => $order->id]) }}';
+                            }
+                        })
+                        .catch(() => { });
+                }
+
+                setInterval(pollStatus, 3000);
+            })();
+        </script>
+    @endpush
 @endsection

@@ -45,22 +45,22 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Giảm giá (%)</label>
-                                <input id="product-slug" name="slug" value="{{ old('discount_percent', $product->discount_percent) }}"
+                                <input id="product-discount_percent" name="discount_percent" value="{{ old('discount_percent', $product->discount_percent) }}"
                                     class="form-control">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Chịu tải</label>
-                                <input id="product-slug" name="weight_capacity" value="{{ old('slug', $product->weight_capacity) }}"
+                                <input id="product-weight_capacity" name="weight_capacity" value="{{ old('weight_capacity', $product->weight_capacity) }}"
                                     class="form-control">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Chất kiệu</label>
-                                <input id="product-slug" name="material" value="{{ old('slug', $product->material) }}"
+                                <input id="product-material" name="material" value="{{ old('material', $product->material) }}"
                                     class="form-control">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Bảo hành</label>
-                                <input id="product-slug" name="warranty" value="{{ old('slug', $product->warranty) }}"
+                                <input id="product-warranty" name="warranty" value="{{ old('warranty', $product->warranty) }}"
                                     class="form-control">
                             </div>
                             <div class="mb-3">
