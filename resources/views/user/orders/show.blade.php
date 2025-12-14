@@ -43,7 +43,7 @@
                         @else bg-gray-100 text-gray-800 @endif">
                         @switch($order->order_status)
                             @case('pending')
-                                Chờ xử lý
+                                Chờ xác nhận
                                 @break
                             @case('pending_payment')
                                 Chờ thanh toán

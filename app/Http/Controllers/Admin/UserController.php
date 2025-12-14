@@ -135,13 +135,14 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
-            'current_password' => 'nullable|string',
+            'address' => 'nullable|string|max:255',
+            'current_password' => 'required_with:password|string|nullable',
             'password' => 'nullable|string|min:6|confirmed',
         ]);
 
         // Check current password if changing password
         if (!empty($data['password'])) {
-            if (!Hash::check($data['current_password'], $user->password)) {
+            if (empty($data['current_password']) || !Hash::check($data['current_password'], $user->password)) {
                 return redirect()->back()->withErrors(['current_password' => 'Mật khẩu hiện tại không đúng']);
             }
             $data['password'] = Hash::make($data['password']);

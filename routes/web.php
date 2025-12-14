@@ -3,6 +3,8 @@
 use Faker\Guesser\Name;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Admin\DashboardController;
+
 use App\Http\Controllers\User\HomeController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -74,14 +76,8 @@ Route::prefix('user')->group(function () {
 
 // Admin product management
 Route::middleware('admin')->prefix('admin')->group(function () {
-    Route::get('/', function () {
-        $productCount = \App\Models\Product::where('status', 1)->count();
-        $categoryCount = \App\Models\Category::count();
-        $orderCount = \App\Models\Order::count();
-        $userCount = \App\Models\User::where('role', 'user')->count();
-
-        return view('admin.dashboard', compact('productCount', 'categoryCount', 'orderCount', 'userCount'));
-    })->name('admin.dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('dashboard/stats', [DashboardController::class, 'stats'])->name('admin.dashboard.stats');
     Route::get('products', [\App\Http\Controllers\Admin\ProductController::class, 'index'])->name('admin.products.index');
     Route::get('products/create', [\App\Http\Controllers\Admin\ProductController::class, 'create'])->name('admin.products.create');
     Route::post('products', [\App\Http\Controllers\Admin\ProductController::class, 'store'])->name('admin.products.store');

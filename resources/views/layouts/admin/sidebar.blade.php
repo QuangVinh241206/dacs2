@@ -85,7 +85,7 @@
                             <i class="nav-arrow bi bi-chevron-right"></i>
                         </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview">                      
                         <li class="nav-item">
                             <a href="{{ route('admin.users.index') }}"
                                 class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">

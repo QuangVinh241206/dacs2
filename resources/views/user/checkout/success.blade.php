@@ -24,7 +24,7 @@
                             @endif
                         </span>
                     </div>
-                    <div>Trạng thái: <span id="order-status" class="font-semibold">{{ $order->order_status }}</span></div>
+                    <div>Trạng thái: <span id="order-status" class="font-semibold">{{ $order->order_status == 'pending' ? 'Chờ xác nhận' : $order->order_status }}</span></div>
                 </div>
 
                 <div class="mt-6 flex gap-3">
