@@ -161,39 +161,68 @@
                 <p class="text-gray-600">Ghé thăm showroom gần nhất để trải nghiệm sản phẩm</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Showroom Quận 1 -->
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <img src="https://readdy.ai/api/search-image?query=modern%2520furniture%2520showroom%2520interior%2C%2520elegant%2520bedroom%2520displays%2C%2520professional%2520retail%2520space%2C%2520luxury%2520furniture%2520store%2C%2520clean%2520layout%2C%2520warm%2520lighting%2C%2520high-end%2520atmosphere%2C%2520on%2520plain%2520white%2520background&width=400&height=300&seq=showroom1&orientation=landscape"
-                        alt="Showroom Quận 1" class="w-full h-48 object-cover">
+                    <div class="w-full h-48">
+                        <iframe
+                            src="https://www.google.com/maps?q={{ urlencode('123 Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. HCM') }}&output=embed"
+                            class="w-full h-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                            aria-label="Showroom Quận 1"></iframe>
+                    </div>
                     <div class="p-6">
                         <h3 class="text-xl font-semibold text-gray-900 mb-2">Showroom Quận 1</h3>
                         <p class="text-gray-600 mb-4">123 Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. HCM</p>
-                        <div class="flex items-center text-gray-600">
-                            <i class="ri-time-line mr-2"></i>
-                            <span>08:00 - 21:00</span>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-gray-600">
+                                <i class="ri-time-line mr-2"></i>
+                                <span>08:00 - 21:00</span>
+                            </div>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode('123 Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. HCM') }}"
+                               target="_blank" class="text-primary hover:underline">Mở trên Google Maps</a>
                         </div>
                     </div>
                 </div>
+
+                <!-- Showroom Quận 7 -->
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <img src="https://readdy.ai/api/search-image?query=modern%2520furniture%2520showroom%2520interior%2C%2520bedroom%2520furniture%2520display%2C%2520professional%2520retail%2520space%2C%2520luxury%2520store%2520design%2C%2520organized%2520layout%2C%2520ambient%2520lighting%2C%2520premium%2520atmosphere%2C%2520on%2520plain%2520white%2520background&width=400&height=300&seq=showroom2&orientation=landscape"
-                        alt="Showroom Quận 7" class="w-full h-48 object-cover">
+                    <div class="w-full h-48">
+                        <iframe
+                            src="https://www.google.com/maps?q={{ urlencode('456 Nguyễn Thị Thập, Phường Tân Phú, Quận 7, TP. HCM') }}&output=embed"
+                            class="w-full h-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                            aria-label="Showroom Quận 7"></iframe>
+                    </div>
                     <div class="p-6">
                         <h3 class="text-xl font-semibold text-gray-900 mb-2">Showroom Quận 7</h3>
                         <p class="text-gray-600 mb-4">456 Nguyễn Thị Thập, Phường Tân Phú, Quận 7, TP. HCM</p>
-                        <div class="flex items-center text-gray-600">
-                            <i class="ri-time-line mr-2"></i>
-                            <span>08:00 - 21:00</span>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-gray-600">
+                                <i class="ri-time-line mr-2"></i>
+                                <span>08:00 - 21:00</span>
+                            </div>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode('456 Nguyễn Thị Thập, Phường Tân Phú, Quận 7, TP. HCM') }}"
+                               target="_blank" class="text-primary hover:underline">Mở trên Google Maps</a>
                         </div>
                     </div>
                 </div>
+
+                <!-- Showroom Hà Nội -->
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <img src="https://readdy.ai/api/search-image?query=modern%2520furniture%2520showroom%2520interior%2C%2520bed%2520display%2520area%2C%2520professional%2520retail%2520environment%2C%2520upscale%2520furniture%2520store%2C%2520minimalist%2520layout%2C%2520perfect%2520lighting%2C%2520luxurious%2520setting%2C%2520on%2520plain%2520white%2520background&width=400&height=300&seq=showroom3&orientation=landscape"
-                        alt="Showroom Hà Nội" class="w-full h-48 object-cover">
+                    <div class="w-full h-48">
+                        <iframe
+                            src="https://www.google.com/maps?q={{ urlencode('789 Đường Láng, Quận Đống Đa, Hà Nội') }}&output=embed"
+                            class="w-full h-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                            aria-label="Showroom Hà Nội"></iframe>
+                    </div>
                     <div class="p-6">
                         <h3 class="text-xl font-semibold text-gray-900 mb-2">Showroom Hà Nội</h3>
                         <p class="text-gray-600 mb-4">789 Đường Láng, Quận Đống Đa, Hà Nội</p>
-                        <div class="flex items-center text-gray-600">
-                            <i class="ri-time-line mr-2"></i>
-                            <span>08:00 - 21:00</span>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-gray-600">
+                                <i class="ri-time-line mr-2"></i>
+                                <span>08:00 - 21:00</span>
+                            </div>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode('789 Đường Láng, Quận Đống Đa, Hà Nội') }}"
+                               target="_blank" class="text-primary hover:underline">Mở trên Google Maps</a>
                         </div>
                     </div>
                 </div>
