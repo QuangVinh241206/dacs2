@@ -19,7 +19,7 @@
     <div class="col-md-6">
         <p><strong>Ngày đặt:</strong> {{ $order->order_date ? $order->order_date->format('d/m/Y H:i') : 'N/A' }}</p>
         <p><strong>Phương thức thanh toán:</strong>
-            {{ $order->payment_method === 'COD' ? 'Thanh toán khi nhận hàng' : ($order->payment_method === 'bank_transfer' ? 'Chuyển khoản' : 'Ví điện tử') }}
+            {{ $order->payment_method === 'cod' ? 'Thanh toán khi nhận hàng' : ($order->payment_method === 'bank_transfer' ? 'Chuyển khoản QR' : 'không xác định') }}
         </p>
     </div>
     <div class="col-md-6">

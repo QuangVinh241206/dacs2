@@ -113,8 +113,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="payment-method-card cursor-pointer" data-method="qr">
-                                <input type="radio" id="qr" name="payment_method" value="qr" class="hidden peer">
+                            <div class="payment-method-card cursor-pointer" data-method="bank_transfer">
+                                <input type="radio" id="bank_transfer" name="payment_method" value="bank_transfer" class="hidden peer">
                                 <div
                                     class="border-2 border-gray-300 rounded-lg p-4 hover:border-blue-500 peer-checked:border-blue-500 peer-checked:bg-blue-50 transition flex items-center">
 

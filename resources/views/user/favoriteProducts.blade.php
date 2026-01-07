@@ -93,7 +93,7 @@
                         <!-- Product Image -->
                         <div class="relative h-56 bg-gray-100 overflow-hidden">
                             @if($favorite->product->images->count() > 0)
-                                <img src="{{ asset('storage/' . $favorite->product->images->first()->image_path) }}"
+                                <img src="{{ asset('storage/'. $favorite->product->images->where('is_main', true)->first()->image_url) }}"
                                     alt="{{ $favorite->product->name }}"
                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             @else

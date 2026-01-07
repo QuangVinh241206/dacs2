@@ -191,7 +191,7 @@ class ChatController extends Controller
 					if (Storage::exists($path)) {
 						$thumbnail = Storage::url($path);
 					} else {
-						$thumbnail = asset($path);
+						$thumbnail = asset('storage/' . $path);
 					}
 				}
 			}
