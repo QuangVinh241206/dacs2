@@ -146,7 +146,7 @@ class AuthController extends Controller
         );
 
         if ($status == Password::PASSWORD_RESET) {
-            return redirect()->route('auth.login')->with('status', 'Mật khẩu của bạn đã được đặt lại thành công.');
+            return redirect()->route('login')->with('status', 'Mật khẩu của bạn đã được đặt lại thành công.');
         }
 
         return back()->withErrors(['email' => ['Không thể đặt lại mật khẩu. Vui lòng thử lại.']]);
