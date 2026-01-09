@@ -140,7 +140,7 @@ class CheckoutController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:50'],
             'address' => ['required', 'string', 'max:1000'],
-            'payment_method' => ['required', 'in:cod,qr'],
+            'payment_method' => ['required', 'in:cod,bank_transfer'],
         ]);
 
         $user = Auth::user();
