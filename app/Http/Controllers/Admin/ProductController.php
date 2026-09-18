@@ -136,7 +136,7 @@ class ProductController extends Controller
             }
             $data['slug'] = $slug;
         }
-
+        
         $product = Product::create($data);
 
         return redirect()->route('admin.products.show', $product->id)->with('success', 'Thêm sản phẩm thành công.');
